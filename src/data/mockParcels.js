@@ -1,242 +1,783 @@
-// Mock Synthetic Parcel Dataset for LAND STACK Prototype
-// 50 Demo Parcels situated in Pune / Mulshi study area (Maharashtra)
+// BhoomiDrishti — Curated 20 Demo Parcels Dataset (Maharashtra / Pune District)
 
-export const MOCK_PARCELS = Array.from({ length: 50 }, (_, i) => {
-  const idNum = (1245 + i).toString();
-  const ulpin = `MH-PUN-${idNum}`;
-  const surveyNo = `${120 + Math.floor(i / 3)}/${(i % 3) + 1}${i % 5 === 0 ? 'B' : ''}`;
-  
-  const villages = ['Hinjawadi Phase 3', 'Maan Village', 'Marunji Sector 2', 'Bavdhan Green Valley', 'Pirangut Cluster B', 'Wakad West'];
-  const village = villages[i % villages.length];
-  
-  // Base coordinates around Pune / Mulshi area (approx 18.52 to 18.57 N, 73.70 to 73.78 E)
-  const baseLat = 18.5350 + (Math.floor(i / 7) * 0.008) + ((i % 7) * 0.0015);
-  const baseLng = 73.7200 + ((i % 7) * 0.009) + (Math.floor(i / 7) * 0.002);
-  const size = 0.0025 + ((i % 4) * 0.0008);
-
-  const coordinates = [
-    [baseLat, baseLng],
-    [baseLat + size * 0.9, baseLng + size * 0.2],
-    [baseLat + size * 1.1, baseLng + size * 1.1],
-    [baseLat + size * 0.1, baseLng + size * 0.95],
-    [baseLat, baseLng]
-  ];
-
-  const centerLat = baseLat + size * 0.55;
-  const centerLng = baseLng + size * 0.55;
-
-  const areaHa = parseFloat((1.2 + (i * 0.17) % 3.5).toFixed(2));
-  const landUses = ['Residential', 'Agricultural', 'Commercial', 'Industrial', 'Mixed Use'];
-  const landUse = landUses[i % landUses.length];
-
-  // Introduce deliberate inconsistencies in specific index items
-  const hasAreaMismatch = i === 0 || i === 4 || i === 12 || i === 23 || i === 38;
-  const hasOwnerMismatch = i === 2 || i === 15 || i === 29;
-  const hasUnapprovedConstruction = i === 0 || i === 7 || i === 18 || i === 31 || i === 44;
-  const hasMortgageWarning = i === 0 || i === 3 || i === 14 || i === 27;
-  const hasTaxOutstanding = i === 0 || i === 6 || i === 19 || i === 35;
-
-  let verificationStatus = 'VERIFIED';
-  const issues = [];
-
-  if (hasAreaMismatch) {
-    verificationStatus = 'ISSUES_DETECTED';
-    issues.push({
-      id: `ISS-${idNum}-1`,
-      ruleId: 'RULE-01',
-      title: 'Parcel Area Discrepancy Across Records',
-      severity: 'MEDIUM',
-      sources: {
-        cadastral: `${(areaHa + 0.05).toFixed(2)} Ha`,
-        ror: `${areaHa.toFixed(2)} Ha`,
-        registration: `${(areaHa + 0.05).toFixed(2)} Ha`,
-        tax: `${(areaHa + 0.03).toFixed(2)} Ha`
-      },
-      difference: '0.05 Ha (2.13% variance)',
-      description: 'Cadastral GIS boundary polygon area differs from 7/12 RoR recorded area.',
-      recommendedAction: 'Trigger Revenue Officer physical land survey re-measurement task.'
-    });
-  }
-
-  if (hasOwnerMismatch) {
-    verificationStatus = 'ISSUES_DETECTED';
-    issues.push({
-      id: `ISS-${idNum}-2`,
-      ruleId: 'RULE-02',
-      title: 'Ownership Name Mismatch (RoR vs Registration)',
-      severity: 'HIGH',
-      sources: {
-        ror: i % 2 === 0 ? 'Ramesh V. Patil & Brothers' : 'Suresh M. Deshmukh',
-        registration: i % 2 === 0 ? 'Ramesh V. Patil' : 'Deshmukh Infrastructure Pvt Ltd',
-      },
-      difference: 'Co-owners listed in 7/12 RoR are omitted from recent Deed of Conveyance.',
-      description: 'Recent sale deed registration does not include all mutated joint holders.',
-      recommendedAction: 'Hold mutation workflow until Sub-Registrar clarification.'
-    });
-  }
-
-  if (hasUnapprovedConstruction) {
-    verificationStatus = 'ISSUES_DETECTED';
-    issues.push({
-      id: `ISS-${idNum}-3`,
-      ruleId: 'RULE-06',
-      title: 'Spatial Change Detected Without Building Permission',
-      severity: 'HIGH',
-      sources: {
-        satellite2023: 'Open agricultural/vacant plot',
-        satellite2026: 'New built-up footprint (~420 sq m)',
-        planningPermission: 'No Active Building Permit Found'
-      },
-      difference: '+420 sq m unpermitted structure footprint',
-      description: 'Geo-AI temporal change detection flagged new construction post-2023 with no correspond municipal approval.',
-      recommendedAction: 'Issue notice via Planning Authority & order site verification.'
-    });
-  }
-
-  if (hasTaxOutstanding && !hasAreaMismatch && !hasOwnerMismatch && !hasUnapprovedConstruction) {
-    verificationStatus = 'PENDING_REVIEW';
-  }
-
-  const ownersList = [
-    'Kulkarni Estate Developers LLP',
-    'Ramesh V. Patil & Joint Holders',
-    'Anand Rao Educational Trust',
-    'Sahyadri Agri Tech Pvt Ltd',
-    'Suresh M. Deshmukh',
-    'Sunita Prakash Joshi',
-    'Greenfield Logistics Park Ltd',
-    'Mahesh D. Shinde & Family'
-  ];
-  const owner = ownersList[i % ownersList.length];
-
-  return {
-    id: idNum,
-    ulpin: ulpin,
-    surveyNo: surveyNo,
-    village: village,
+export const MOCK_PARCELS = [
+  {
+    id: '1245',
+    ulpin: 'MH-PUN-001245-6789',
+    surveyNo: '123/2',
+    village: 'Moshi',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '412105',
+    area: '2.40 Ha',
+    areaRaw: 2.40,
+    center: [18.6710, 73.8450],
+    coordinates: [
+      [18.6700, 73.8430],
+      [18.6725, 73.8435],
+      [18.6730, 73.8465],
+      [18.6705, 73.8460],
+      [18.6700, 73.8430]
+    ],
+    landUse: 'Residential',
+    masterPlanZone: 'Zone R-2 (Urban Medium Density Residential)',
+    owner: 'Demo Owner (Kulkarni Estate Developers)',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'ISSUES_DETECTED',
+    statusSummary: {
+      ownership: 'OK',
+      registration: 'OK',
+      encumbrance: 'WARNING',
+      landUse: 'OK',
+      buildingPermission: 'WARNING',
+      propertyTax: 'OK',
+      dataConsistency: 'ISSUE',
+      satelliteChange: 'ALERT'
+    },
+    identity: {
+      ulpin: 'MH-PUN-001245-6789',
+      surveyNo: '123/2',
+      subDivision: '2A',
+      areaHa: '2.40 Ha',
+      areaSqM: '24,000 sq. m.',
+      gisCoordinates: '18.671000 N, 73.845000 E',
+      village: 'Moshi',
+      taluka: 'Haveli',
+      district: 'Pune',
+      state: 'Maharashtra (27)'
+    },
+    ownership: {
+      rorStatus: 'Active 7/12 Excerpt Verified (Mahabhulekh)',
+      khataNo: 'KHA-9041',
+      mutationNo: 'MUT-2024-1102',
+      primaryOwner: 'Kulkarni Estate Developers LLP',
+      jointOwnersCount: 2,
+      rightsType: 'Occupant Class I (Bhumiswami)',
+      lastMutationDate: '14 Feb 2024'
+    },
+    registration: {
+      status: 'Registered in SGR Sub-Registrar Haveli-4',
+      sgrOffice: 'Sub-Registrar Haveli-4 (Chinchwad)',
+      transactionId: 'REG-2023-9901',
+      registrationDate: '10 Nov 2023',
+      deedType: 'Deed of Conveyance / Sale Deed',
+      stampDutyStatus: 'Fully Paid (₹ 6,40,000)'
+    },
+    encumbrance: {
+      mortgageStatus: 'State Bank of India Mortgage Charge',
+      bankName: 'State Bank of India (Pune Main)',
+      loanAmount: '₹ 85,000,000',
+      disputeIndicator: 'Nil Civil Court Dispute'
+    },
+    landUsePlanning: {
+      currentLandUse: 'Residential',
+      masterPlanZone: 'Zone R-2 (PMRDA Master Plan)',
+      permittedUse: 'Apartments, Group Housing',
+      buildingPermissionStatus: 'Unapproved Structure Flagged'
+    },
+    fiscal: {
+      propertyTaxStatus: 'Paid (FY 2025-26)',
+      assessmentId: 'TAX-PCMC-88120',
+      outstandingAmount: '₹ 0',
+      taxedArea: '2.38 Ha'
+    },
+    infrastructure: {
+      electricity: 'MSEDCL 3-Phase Commercial',
+      water: 'PCMC Bulk Pipeline',
+      roadAccess: '24m DPD Road Frontage',
+      drainage: 'Stormwater Drain Connected'
+    },
+    restrictions: {
+      environmental: 'No CRZ / Forest Restriction',
+      planning: 'FSI Allowed: 1.50',
+      otherRestrictions: 'Clearance obtained from NHAI'
+    },
+    spatialIntelligence: {
+      changeStatus: 'Unapproved Structure Flagged',
+      lastSatelliteScan: '15 Sep 2026 (Sentinel-2 High-Res)',
+      detectedStructureArea: '420 sq. m.',
+      confidenceScore: '87%'
+    },
+    issues: [
+      {
+        id: 'ISS-1245-1',
+        ruleId: 'RULE-01',
+        title: 'Area Mismatch (RoR 2.35 Ha vs Cadastral 2.40 Ha)',
+        severity: 'MEDIUM',
+        sources: { cadastral: '2.40 Ha', ror: '2.35 Ha', registration: '2.40 Ha', tax: '2.38 Ha' },
+        difference: '0.05 Ha Variance',
+        description: 'RoR area (2.35 Ha) differs from Cadastral boundary (2.40 Ha).',
+        recommendedAction: 'Order Revenue Inspector site survey.'
+      }
+    ],
+    timeline: [
+      { year: '2019', date: '12 Jan 2019', event: 'ULPIN Baseline Assignment', details: 'Assigned 14-digit ULPIN under DILRMP.' },
+      { year: '2023', date: '10 Nov 2023', event: 'Conveyance Deed Registration', details: 'Transferred title at Sub-Registrar SGR.' },
+      { year: '2026', date: '15 Sep 2026', event: 'Satellite Change Alert', details: 'Geo-AI flagged 420 sq. m. structural expansion.' }
+    ]
+  },
+  {
+    id: '1246',
+    ulpin: 'MH-PUN-001246-9012',
+    surveyNo: '124/1',
+    village: 'Hinjawadi',
     taluka: 'Mulshi',
     district: 'Pune',
     state: 'Maharashtra',
     pinCode: '411057',
-    area: `${areaHa} Ha`,
-    areaRaw: areaHa,
-    coordinates: coordinates,
-    center: [centerLat, centerLng],
-    landUse: landUse,
-    masterPlanZone: landUse === 'Agricultural' ? 'Zone A - Green Belt / Agriculture' : 'Zone R-2 - Urban Residential Density',
-    owner: owner,
-    ownershipStatus: hasOwnerMismatch ? 'Flagged Inconsistency' : 'Verified Registered Owner',
-    verificationStatus: verificationStatus,
-    
-    // Status Summary Matrix
-    statusSummary: {
-      ownership: hasOwnerMismatch ? 'ISSUE' : 'OK',
-      registration: 'OK',
-      encumbrance: hasMortgageWarning ? 'WARNING' : 'OK',
-      landUse: 'OK',
-      buildingPermission: hasUnapprovedConstruction ? 'MISSING' : 'OK',
-      propertyTax: hasTaxOutstanding ? 'WARNING' : 'OK',
-      dataConsistency: issues.length > 0 ? 'ISSUE' : 'OK',
-      satelliteChange: hasUnapprovedConstruction ? 'ALERT' : 'NONE'
-    },
-
-    // 9 Detailed Sections for Parcel Digital Twin
-    identity: {
-      ulpin: ulpin,
-      surveyNo: surveyNo,
-      subDivision: `${(i % 4) + 1}`,
-      areaHa: `${areaHa} Ha`,
-      areaSqM: `${Math.round(areaHa * 10000)} sq. m.`,
-      gisCoordinates: `${centerLat.toFixed(6)} N, ${centerLng.toFixed(6)} E`,
-      village: village,
-      taluka: 'Mulshi',
-      district: 'Pune',
-      state: 'Maharashtra',
-      stateCode: '27'
-    },
-
-    ownership: {
-      rorStatus: 'Active Mutation Verified (7/12 Excerpt)',
-      khataNo: `KHA-${300 + i}`,
-      mutationNo: `MUT-2024-${890 + i}`,
-      primaryOwner: owner,
-      jointOwnersCount: (i % 3) === 0 ? 3 : 1,
-      rightsType: 'Occupant Class I (Bhumiswami)',
-      lastMutationDate: '14 Feb 2024'
-    },
-
-    registration: {
-      status: 'Record Match Found in SGR (Sub-Registrar)',
-      sgrOffice: 'Sub-Registrar Mulshi-2',
-      transactionId: `REG-2023-${4500 + i}`,
-      registrationDate: '10 Nov 2023',
-      deedType: 'Deed of Conveyance / Sale Deed',
-      stampDutyStatus: 'Fully Paid (₹ 4,85,000)'
-    },
-
-    encumbrance: {
-      mortgageStatus: hasMortgageWarning ? 'Mortgage Charge Registered' : 'Nil Encumbrance Certificate Issued',
-      bankName: hasMortgageWarning ? 'State Bank of India (Pune Main Branch)' : 'N/A',
-      loanAmount: hasMortgageWarning ? '₹ 75,000,000' : 'N/A',
-      disputeIndicator: hasOwnerMismatch ? 'Title Dispute Pending in Civil Court' : 'No Civil Litigation Flagged'
-    },
-
-    landUsePlanning: {
-      currentLandUse: landUse,
-      masterPlanZone: landUse === 'Agricultural' ? 'Zone A - Agricultural / No Development' : 'Zone R2 - Medium Density Residential',
-      permittedUse: landUse === 'Agricultural' ? 'Farming, Agri-Processing, Farmhouse' : 'Residential Apartments, Commercial Ground Floor',
-      buildingPermissionStatus: hasUnapprovedConstruction ? 'No Municipal Approval Found' : 'Sanctioned Layout (PMRDA-BP-2024-1102)'
-    },
-
-    fiscal: {
-      propertyTaxStatus: hasTaxOutstanding ? 'Outstanding Dues Pending' : 'Clear (Paid up to FY 2025-26)',
-      assessmentId: `TAX-PUN-${9000 + i}`,
-      outstandingAmount: hasTaxOutstanding ? `₹ ${12500 + (i * 450)}` : '₹ 0',
-      taxedArea: `${(areaHa * 0.98).toFixed(2)} Ha`
-    },
-
-    infrastructure: {
-      electricity: 'MSEDC 11kV Feeder Available',
-      water: 'PMRDA Bulk Water Connection Pipeline',
-      roadAccess: '18m Wide Village DPD Road Frontage',
-      drainage: 'Stormwater Drain Network Connected'
-    },
-
-    restrictions: {
-      environmental: landUse === 'Agricultural' ? 'Within 500m River Mula Buffer Zone' : 'No CRZ / Forest Restriction',
-      planning: 'FSI / FAR Allowed: 1.50',
-      otherRestrictions: 'Subject to High-Voltage Line Overhead Corridor Clearance'
-    },
-
-    spatialIntelligence: {
-      changeStatus: hasUnapprovedConstruction ? 'Unpermitted Built-up Detected' : 'No Significant Change Detected',
-      lastSatelliteScan: '15 Sep 2026 (Sentinel-2 / High-Res Optical)',
-      detectedStructureArea: hasUnapprovedConstruction ? '420 sq. m.' : '0 sq. m.',
-      confidenceScore: hasUnapprovedConstruction ? '87%' : '98%'
-    },
-
-    issues: issues,
-
+    area: '1.80 Ha',
+    areaRaw: 1.80,
+    center: [18.5910, 73.7380],
+    coordinates: [
+      [18.5900, 73.7360],
+      [18.5925, 73.7365],
+      [18.5930, 73.7395],
+      [18.5905, 73.7390],
+      [18.5900, 73.7360]
+    ],
+    landUse: 'Commercial / IT Park',
+    masterPlanZone: 'Zone C-1 (Commercial IT/ITeS Corridor)',
+    owner: 'TechPark Infrastructure Pvt Ltd',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001246-9012', surveyNo: '124/1', subDivision: '1', areaHa: '1.80 Ha', areaSqM: '18,000 sq. m.', gisCoordinates: '18.591000 N, 73.738000 E', village: 'Hinjawadi', taluka: 'Mulshi', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-1044', mutationNo: 'MUT-2025-441', primaryOwner: 'TechPark Infrastructure Pvt Ltd', jointOwnersCount: 1, rightsType: 'Occupant Class I', lastMutationDate: '10 Jan 2025' },
+    registration: { status: 'Registered SGR Mulshi-1', sgrOffice: 'Sub-Registrar Mulshi-1', transactionId: 'REG-2025-1022', registrationDate: '08 Jan 2025', deedType: 'Sale Deed', stampDutyStatus: 'Fully Paid (₹ 12,50,000)' },
+    encumbrance: { mortgageStatus: 'Nil Encumbrance Certificate', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Commercial IT Park', masterPlanZone: 'Zone C-1 (PMRDA)', permittedUse: 'Software Park, Offices', buildingPermissionStatus: 'Sanctioned Layout PMRDA-BP-2025-99' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PMRDA-4401', outstandingAmount: '₹ 0', taxedArea: '1.80 Ha' },
+    infrastructure: { electricity: '33kV Substation Line', water: 'MIDC Water Connection', roadAccess: '30m MIDC Main Road', drainage: 'STP Plant Connected' },
+    restrictions: { environmental: 'Environmental Clearance NOC Issued', planning: 'FSI Allowed: 2.50', otherRestrictions: 'Aviation Clearance OK' },
+    spatialIntelligence: { changeStatus: 'No Change / Verified Baseline', lastSatelliteScan: '18 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [],
     timeline: [
-      { year: '2019', date: '12 Jan 2019', event: 'Parcel Baseline ULPIN Assignment', details: 'Assigned unique 14-digit ULPIN under Digital India Land Records Modernization Programme (DILRMP).' },
-      { year: '2021', date: '04 Aug 2021', event: 'Ownership Sale Deed Execution', details: `Transferred title to ${owner} registered at Sub-Registrar Office.` },
-      { year: '2023', date: '10 Nov 2023', event: 'Mortgage Charge Entry', details: hasMortgageWarning ? 'State Bank of India hypothecation charge entered in 7/12 record.' : 'Routine title verification completed.' },
-      { year: '2025', date: '18 Mar 2025', event: 'PMRDA Planning Zone Clearance', details: 'Master Plan alignment verified with PMRDA DP map.' },
-      { year: '2026', date: '15 Sep 2026', event: 'Geo-AI Satellite Change Alert', details: hasUnapprovedConstruction ? 'Geo-AI flagged 420 sq. m. structural expansion without registered building sanction.' : 'Periodic AI satellite scan verified no illegal encroachment.' }
+      { year: '2020', date: '10 May 2020', event: 'MIDC Land Allocation', details: 'Allotted plot under IT Policy.' },
+      { year: '2025', date: '08 Jan 2025', event: 'Sanctioned Layout Approval', details: 'PMRDA approved IT Park layout.' }
     ]
-  };
-});
+  },
+  {
+    id: '1247',
+    ulpin: 'MH-PUN-001247-3310',
+    surveyNo: '88/4',
+    village: 'Maan',
+    taluka: 'Mulshi',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411057',
+    area: '3.15 Ha',
+    areaRaw: 3.15,
+    center: [18.5750, 73.7120],
+    coordinates: [
+      [18.5740, 73.7100],
+      [18.5765, 73.7105],
+      [18.5770, 73.7135],
+      [18.5745, 73.7130],
+      [18.5740, 73.7100]
+    ],
+    landUse: 'Agricultural',
+    masterPlanZone: 'Zone A-1 (Agricultural Green Belt)',
+    owner: 'Ramesh V. Patil & Joint Holders',
+    ownershipStatus: 'Co-owner Name Inconsistency',
+    verificationStatus: 'ISSUES_DETECTED',
+    statusSummary: { ownership: 'WARNING', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'ISSUE', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001247-3310', surveyNo: '88/4', subDivision: '4B', areaHa: '3.15 Ha', areaSqM: '31,500 sq. m.', gisCoordinates: '18.575000 N, 73.712000 E', village: 'Maan', taluka: 'Mulshi', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Co-owner Name Mismatch Flagged', khataNo: 'KHA-3319', mutationNo: 'MUT-2022-771', primaryOwner: 'Ramesh V. Patil & Brothers', jointOwnersCount: 4, rightsType: 'Occupant Class I', lastMutationDate: '12 Aug 2022' },
+    registration: { status: 'Registered in SGR Mulshi', sgrOffice: 'Sub-Registrar Mulshi-2', transactionId: 'REG-2026-0041', registrationDate: '14 Feb 2026', deedType: 'Sale Deed Excerpt', stampDutyStatus: 'Paid (₹ 3,10,000)' },
+    encumbrance: { mortgageStatus: 'Nil Mortgage', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Family Title Suit Pending' },
+    landUsePlanning: { currentLandUse: 'Agricultural', masterPlanZone: 'Zone A-1 Green Belt', permittedUse: 'Farming, Horticulture', buildingPermissionStatus: 'N/A' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-GP-MAAN-102', outstandingAmount: '₹ 0', taxedArea: '3.15 Ha' },
+    infrastructure: { electricity: 'Agricultural Pump Line 7.5HP', water: 'Canal Canal Connection', roadAccess: '6m Farm Access Track', drainage: 'Natural Stream Drainage' },
+    restrictions: { environmental: 'Within 200m Canal Buffer', planning: 'No Heavy Construction', otherRestrictions: 'Agri Use Only' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '12 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '98%' },
+    issues: [
+      {
+        id: 'ISS-1247-1',
+        ruleId: 'RULE-02',
+        title: 'Ownership Name Inconsistency (7/12 vs Registration)',
+        severity: 'HIGH',
+        sources: { ror: 'Ramesh V. Patil & 3 Brothers', registration: 'Ramesh V. Patil Only' },
+        difference: 'Co-owners omitted in recent Deed',
+        description: 'Sub-Registrar conveyance omits 3 mutated joint holders listed on 7/12.',
+        recommendedAction: 'Hold mutation entry pending clarification.'
+      }
+    ],
+    timeline: [
+      { year: '2022', date: '12 Aug 2022', event: 'Inheritance Mutation Entry', details: 'Mutated 4 legal heirs in 7/12.' },
+      { year: '2026', date: '14 Feb 2026', event: 'Unverified Sale Deed Upload', details: 'Single owner attempted transfer.' }
+    ]
+  },
+  {
+    id: '1248',
+    ulpin: 'MH-PUN-001248-7711',
+    surveyNo: '45/3',
+    village: 'Bavdhan',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411021',
+    area: '0.95 Ha',
+    areaRaw: 0.95,
+    center: [18.5180, 73.7710],
+    coordinates: [
+      [18.5170, 73.7700],
+      [18.5190, 73.7702],
+      [18.5195, 73.7725],
+      [18.5175, 73.7720],
+      [18.5170, 73.7700]
+    ],
+    landUse: 'Residential',
+    masterPlanZone: 'Zone R-1 (Low Density Residential)',
+    owner: 'Green Valley Housing Society',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001248-7711', surveyNo: '45/3', subDivision: '3', areaHa: '0.95 Ha', areaSqM: '9,500 sq. m.', gisCoordinates: '18.518000 N, 73.771000 E', village: 'Bavdhan', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-7782', mutationNo: 'MUT-2023-118', primaryOwner: 'Green Valley Society Trustees', jointOwnersCount: 1, rightsType: 'Occupant Class I', lastMutationDate: '15 Mar 2023' },
+    registration: { status: 'Registered SGR Haveli-2', sgrOffice: 'Sub-Registrar Haveli-2', transactionId: 'REG-2023-5501', registrationDate: '10 Mar 2023', deedType: 'Conveyance Deed', stampDutyStatus: 'Paid (₹ 4,75,000)' },
+    encumbrance: { mortgageStatus: 'Nil Encumbrance', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Residential', masterPlanZone: 'Zone R-1', permittedUse: 'Bungalows, Row Houses', buildingPermissionStatus: 'Sanctioned Layout PMC-2023-88' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PMC-7701', outstandingAmount: '₹ 0', taxedArea: '0.95 Ha' },
+    infrastructure: { electricity: 'PMC Urban Grid', water: 'PMC Corporation Water', roadAccess: '15m PMC DP Road', drainage: 'Underground Sewer Network' },
+    restrictions: { environmental: 'Hillside Zone Buffer Clearance OK', planning: 'FSI Allowed: 1.10', otherRestrictions: 'None' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '20 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [],
+    timeline: [
+      { year: '2023', date: '10 Mar 2023', event: 'Society Conveyance Deed', details: 'Registered under Maharashtra Co-op Act.' }
+    ]
+  },
+  {
+    id: '1249',
+    ulpin: 'MH-PUN-001249-1100',
+    surveyNo: '201/A',
+    village: 'Wakad',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411057',
+    area: '1.40 Ha',
+    areaRaw: 1.40,
+    center: [18.5980, 73.7630],
+    coordinates: [
+      [18.5970, 73.7610],
+      [18.5995, 73.7615],
+      [18.6000, 73.7645],
+      [18.5975, 73.7640],
+      [18.5970, 73.7610]
+    ],
+    landUse: 'Mixed Use (Comm/Resi)',
+    masterPlanZone: 'Zone M-1 (Mixed High Intensity Corridor)',
+    owner: 'Shinde Business Hub LLP',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'PENDING_REVIEW',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'WARNING', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001249-1100', surveyNo: '201/A', subDivision: '1A', areaHa: '1.40 Ha', areaSqM: '14,000 sq. m.', gisCoordinates: '18.598000 N, 73.763000 E', village: 'Wakad', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-2011', mutationNo: 'MUT-2024-902', primaryOwner: 'Shinde Business Hub LLP', jointOwnersCount: 2, rightsType: 'Occupant Class I', lastMutationDate: '19 Nov 2024' },
+    registration: { status: 'Registered SGR Haveli-4', sgrOffice: 'Sub-Registrar Haveli-4', transactionId: 'REG-2024-8809', registrationDate: '15 Nov 2024', deedType: 'Deed of Assignment', stampDutyStatus: 'Paid (₹ 8,90,000)' },
+    encumbrance: { mortgageStatus: 'ICICI Bank Hypothecation Charge', bankName: 'ICICI Bank (Wakad Branch)', loanAmount: '₹ 45,000,000', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Mixed Use', masterPlanZone: 'Zone M-1', permittedUse: 'Shops Ground Floor, Apartments Upper', buildingPermissionStatus: 'PCMC Sanctioned BP-2025-102' },
+    fiscal: { propertyTaxStatus: 'Outstanding Dues Pending', assessmentId: 'TAX-PCMC-99011', outstandingAmount: '₹ 42,500', taxedArea: '1.40 Ha' },
+    infrastructure: { electricity: 'MSEDCL Commercial Feeder', water: 'PCMC Connection', roadAccess: '24m Wakad-Hinjawadi Road', drainage: 'Connected' },
+    restrictions: { environmental: 'Nil', planning: 'FSI Allowed: 2.00', otherRestrictions: 'Parking Clearance Approved' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '14 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '98%' },
+    issues: [],
+    timeline: [
+      { year: '2024', date: '15 Nov 2024', event: 'Commercial Deed Registered', details: 'Acquired for Business Hub development.' }
+    ]
+  },
+  {
+    id: '1250',
+    ulpin: 'MH-PUN-001250-8800',
+    surveyNo: '16/2',
+    village: 'Marunji',
+    taluka: 'Mulshi',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411057',
+    area: '2.75 Ha',
+    areaRaw: 2.75,
+    center: [18.6050, 73.7250],
+    coordinates: [
+      [18.6040, 73.7230],
+      [18.6065, 73.7235],
+      [18.6070, 73.7265],
+      [18.6045, 73.7260],
+      [18.6040, 73.7230]
+    ],
+    landUse: 'Residential',
+    masterPlanZone: 'Zone R-2 (Urban Density)',
+    owner: 'Deshmukh Infra Housing Pvt Ltd',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001250-8800', surveyNo: '16/2', subDivision: '2', areaHa: '2.75 Ha', areaSqM: '27,500 sq. m.', gisCoordinates: '18.605000 N, 73.725000 E', village: 'Marunji', taluka: 'Mulshi', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-1620', mutationNo: 'MUT-2025-012', primaryOwner: 'Deshmukh Infra Housing Pvt Ltd', jointOwnersCount: 1, rightsType: 'Occupant Class I', lastMutationDate: '04 Jan 2025' },
+    registration: { status: 'Registered SGR Mulshi-1', sgrOffice: 'Sub-Registrar Mulshi-1', transactionId: 'REG-2024-9912', registrationDate: '28 Dec 2024', deedType: 'Sale Deed', stampDutyStatus: 'Paid (₹ 18,20,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Residential', masterPlanZone: 'Zone R-2', permittedUse: 'High Rise Residential Apartments', buildingPermissionStatus: 'PMRDA Sanctioned BP-2025-401' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PMRDA-1620', outstandingAmount: '₹ 0', taxedArea: '2.75 Ha' },
+    infrastructure: { electricity: '11kV Dedicated Substation', water: 'PMRDA Pipeline', roadAccess: '18m Village Road', drainage: 'STP Plant Installed' },
+    restrictions: { environmental: 'Nil', planning: 'FSI Allowed: 1.80', otherRestrictions: 'Fire NOC Clearance OK' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '19 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [],
+    timeline: [
+      { year: '2024', date: '28 Dec 2024', event: 'Land Purchase Conveyance', details: 'Registered at Sub-Registrar Mulshi-1.' }
+    ]
+  },
+  {
+    id: '1251',
+    ulpin: 'MH-PUN-001251-5401',
+    surveyNo: '302/1',
+    village: 'Baner',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411045',
+    area: '0.80 Ha',
+    areaRaw: 0.80,
+    center: [18.5590, 73.7850],
+    coordinates: [
+      [18.5580, 73.7840],
+      [18.5600, 73.7842],
+      [18.5605, 73.7865],
+      [18.5585, 73.7860],
+      [18.5580, 73.7840]
+    ],
+    landUse: 'Commercial',
+    masterPlanZone: 'Zone C-2 (Commercial Hub)',
+    owner: 'Baner Corporate Plaza LLP',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001251-5401', surveyNo: '302/1', subDivision: '1', areaHa: '0.80 Ha', areaSqM: '8,000 sq. m.', gisCoordinates: '18.559000 N, 73.785000 E', village: 'Baner', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-3021', mutationNo: 'MUT-2023-991', primaryOwner: 'Baner Corporate Plaza LLP', jointOwnersCount: 2, rightsType: 'Occupant Class I', lastMutationDate: '10 Aug 2023' },
+    registration: { status: 'Registered SGR Haveli-3', sgrOffice: 'Sub-Registrar Haveli-3', transactionId: 'REG-2023-1102', registrationDate: '02 Aug 2023', deedType: 'Conveyance Deed', stampDutyStatus: 'Paid (₹ 15,00,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Commercial', masterPlanZone: 'Zone C-2', permittedUse: 'Malls, Commercial Complexes', buildingPermissionStatus: 'PMC Sanctioned BP-2024-55' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PMC-3021', outstandingAmount: '₹ 0', taxedArea: '0.80 Ha' },
+    infrastructure: { electricity: 'PMC Commercial Power', water: 'PMC Corporation Water', roadAccess: '36m Baner Main Road', drainage: 'Underground Network' },
+    restrictions: { environmental: 'Nil', planning: 'FSI Allowed: 2.20', otherRestrictions: 'Metro Corridor Clearance OK' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '17 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [],
+    timeline: [
+      { year: '2023', date: '02 Aug 2023', event: 'Corporate Plaza Conveyance', details: 'Registered title conveyance.' }
+    ]
+  },
+  {
+    id: '1252',
+    ulpin: 'MH-PUN-001252-4412',
+    surveyNo: '54/2B',
+    village: 'Sus',
+    taluka: 'Mulshi',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411021',
+    area: '2.10 Ha',
+    areaRaw: 2.10,
+    center: [18.5480, 73.7610],
+    coordinates: [
+      [18.5470, 73.7590],
+      [18.5495, 73.7595],
+      [18.5500, 73.7625],
+      [18.5475, 73.7620],
+      [18.5470, 73.7590]
+    ],
+    landUse: 'Agricultural',
+    masterPlanZone: 'Zone A-1 (Agri Zone)',
+    owner: 'Anand Rao Trust & Farmers',
+    ownershipStatus: 'Land-Use Mismatch Flagged',
+    verificationStatus: 'ISSUES_DETECTED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'WARNING', buildingPermission: 'WARNING', propertyTax: 'OK', dataConsistency: 'ISSUE', satelliteChange: 'ALERT' },
+    identity: { ulpin: 'MH-PUN-001252-4412', surveyNo: '54/2B', subDivision: '2B', areaHa: '2.10 Ha', areaSqM: '21,000 sq. m.', gisCoordinates: '18.548000 N, 73.761000 E', village: 'Sus', taluka: 'Mulshi', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 (Crop: Sugarcane)', khataNo: 'KHA-5421', mutationNo: 'MUT-2021-301', primaryOwner: 'Anand Rao Educational Trust', jointOwnersCount: 3, rightsType: 'Occupant Class I', lastMutationDate: '15 Dec 2021' },
+    registration: { status: 'Registered SGR Mulshi-2', sgrOffice: 'Sub-Registrar Mulshi-2', transactionId: 'REG-2021-4402', registrationDate: '10 Dec 2021', deedType: 'Trust Lease Deed', stampDutyStatus: 'Paid (₹ 2,10,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Agricultural (7/12)', masterPlanZone: 'Zone A-1 Agricultural', permittedUse: 'Farming Only', buildingPermissionStatus: 'No NA Non-Agricultural Order Sanctioned' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-GP-SUS-441', outstandingAmount: '₹ 0', taxedArea: '2.10 Ha' },
+    infrastructure: { electricity: 'Agri Power 5HP', water: 'Borewell & Stream', roadAccess: '12m Village Road', drainage: 'Natural Stream' },
+    restrictions: { environmental: 'Hill Slope Buffer 100m', planning: 'No Commercial Building', otherRestrictions: 'Requires NA Order for Construction' },
+    spatialIntelligence: { changeStatus: 'Commercial Shed Construction Alert', lastSatelliteScan: '15 Sep 2026', detectedStructureArea: '650 sq. m.', confidenceScore: '91%' },
+    issues: [
+      {
+        id: 'ISS-1252-1',
+        ruleId: 'RULE-04',
+        title: 'Land-Use & NA Permission Mismatch',
+        severity: 'HIGH',
+        sources: { ror: 'Agricultural (Sugarcane)', satellite2026: 'Commercial Shed (~650 sq m)' },
+        difference: 'Commercial structure built on Agricultural 7/12 plot without NA Order',
+        description: 'Geo-AI scan flagged commercial warehouse construction on un-converted agricultural land.',
+        recommendedAction: 'Issue Revenue Tehsildar NA Enforcement Notice.'
+      }
+    ],
+    timeline: [
+      { year: '2021', date: '10 Dec 2021', event: 'Trust Lease Execution', details: 'Leased for organic farming.' },
+      { year: '2026', date: '15 Sep 2026', event: 'Unsanctioned Shed Detection', details: 'Satellite flagged 650 sq. m. commercial structure.' }
+    ]
+  },
+  {
+    id: '1253',
+    ulpin: 'MH-PUN-001253-6601',
+    surveyNo: '112/3',
+    village: 'Mahalunge',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411045',
+    area: '1.95 Ha',
+    areaRaw: 1.95,
+    center: [18.5720, 73.7510],
+    coordinates: [
+      [18.5710, 73.7490],
+      [18.5735, 73.7495],
+      [18.5740, 73.7525],
+      [18.5715, 73.7520],
+      [18.5710, 73.7490]
+    ],
+    landUse: 'Residential / High-Density',
+    masterPlanZone: 'Zone R-3 (High Density Smart City Township)',
+    owner: 'Mahalunge Smart Township Pvt Ltd',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001253-6601', surveyNo: '112/3', subDivision: '3', areaHa: '1.95 Ha', areaSqM: '19,500 sq. m.', gisCoordinates: '18.572000 N, 73.751000 E', village: 'Mahalunge', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-1123', mutationNo: 'MUT-2025-502', primaryOwner: 'Mahalunge Smart Township Pvt Ltd', jointOwnersCount: 1, rightsType: 'Occupant Class I', lastMutationDate: '22 Jan 2025' },
+    registration: { status: 'Registered SGR Haveli-3', sgrOffice: 'Sub-Registrar Haveli-3', transactionId: 'REG-2025-0104', registrationDate: '18 Jan 2025', deedType: 'Township Joint Development Deed', stampDutyStatus: 'Paid (₹ 24,00,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Residential High Density', masterPlanZone: 'Zone R-3 (PMRDA Town Planning Scheme)', permittedUse: 'Smart City Residential Towers', buildingPermissionStatus: 'PMRDA TPS Sanctioned TP-2025-11' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PMRDA-1123', outstandingAmount: '₹ 0', taxedArea: '1.95 Ha' },
+    infrastructure: { electricity: '132kV Substation Connection', water: 'PMRDA Bulk Smart Water Network', roadAccess: '36m High Intensity Ring Road', drainage: 'Underground Smart Sewage System' },
+    restrictions: { environmental: 'Mula River Flood Line Buffer Cleared', planning: 'FSI Allowed: 3.00', otherRestrictions: 'TP Scheme Compliance Cleared' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '21 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [],
+    timeline: [
+      { year: '2025', date: '18 Jan 2025', event: 'Township Scheme Registration', details: 'Sanctioned under PMRDA TP Scheme #1.' }
+    ]
+  },
+  {
+    id: '1254',
+    ulpin: 'MH-PUN-001254-2200',
+    surveyNo: '77/1',
+    village: 'Pirangut',
+    taluka: 'Mulshi',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '412115',
+    area: '4.20 Ha',
+    areaRaw: 4.20,
+    center: [18.5110, 73.6820],
+    coordinates: [
+      [18.5100, 73.6800],
+      [18.5125, 73.6805],
+      [18.5130, 73.6835],
+      [18.5105, 73.6830],
+      [18.5100, 73.6800]
+    ],
+    landUse: 'Industrial',
+    masterPlanZone: 'Zone I-2 (Heavy & Medium Industrial Estate)',
+    owner: 'Sahyadri Heavy Engineering Ltd',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001254-2200', surveyNo: '77/1', subDivision: '1', areaHa: '4.20 Ha', areaSqM: '42,000 sq. m.', gisCoordinates: '18.511000 N, 73.682000 E', village: 'Pirangut', taluka: 'Mulshi', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Industrial NA', khataNo: 'KHA-7710', mutationNo: 'MUT-2023-410', primaryOwner: 'Sahyadri Heavy Engineering Ltd', jointOwnersCount: 1, rightsType: 'Occupant Class I', lastMutationDate: '05 May 2023' },
+    registration: { status: 'Registered SGR Mulshi-2', sgrOffice: 'Sub-Registrar Mulshi-2', transactionId: 'REG-2023-2211', registrationDate: '28 Apr 2023', deedType: 'Industrial Sale Deed', stampDutyStatus: 'Paid (₹ 28,00,000)' },
+    encumbrance: { mortgageStatus: 'Bank of Baroda Consortium Charge', bankName: 'Bank of Baroda (Pune Main)', loanAmount: '₹ 120,000,000', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Industrial Factory', masterPlanZone: 'Zone I-2', permittedUse: 'Manufacturing, Warehousing', buildingPermissionStatus: 'PMRDA Industrial Clearance IND-2023-88' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-MIDC-7710', outstandingAmount: '₹ 0', taxedArea: '4.20 Ha' },
+    infrastructure: { electricity: '33kV High Voltage HT Line', water: 'MIDC Industrial Water Pipeline', roadAccess: '30m Pirangut State Highway', drainage: 'ETP Plant Installed' },
+    restrictions: { environmental: 'MPCB Red Category Industrial Consent Approved', planning: 'FSI Allowed: 1.00', otherRestrictions: 'Hazardous Waste Clearance OK' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '16 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [],
+    timeline: [
+      { year: '2023', date: '28 Apr 2023', event: 'Industrial Land Transfer', details: 'Transferred for Heavy Engineering plant.' }
+    ]
+  },
+  {
+    id: '1255',
+    ulpin: 'MH-PUN-001255-9988',
+    surveyNo: '141/5',
+    village: 'Chakan',
+    taluka: 'Khed',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '410501',
+    area: '5.50 Ha',
+    areaRaw: 5.50,
+    center: [18.7610, 73.8580],
+    coordinates: [
+      [18.7600, 73.8560],
+      [18.7625, 73.8565],
+      [18.7630, 73.8595],
+      [18.7605, 73.8590],
+      [18.7600, 73.8560]
+    ],
+    landUse: 'Industrial Logistics',
+    masterPlanZone: 'Zone I-1 (Automotive & Logistics Park)',
+    owner: 'Greenfield Logistics Hub Pvt Ltd',
+    ownershipStatus: 'Verified Registered Owner',
+    verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001255-9988', surveyNo: '141/5', subDivision: '5', areaHa: '5.50 Ha', areaSqM: '55,000 sq. m.', gisCoordinates: '18.761000 N, 73.858000 E', village: 'Chakan', taluka: 'Khed', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 MIDC NA', khataNo: 'KHA-1415', mutationNo: 'MUT-2024-811', primaryOwner: 'Greenfield Logistics Hub Pvt Ltd', jointOwnersCount: 2, rightsType: 'Occupant Class I', lastMutationDate: '14 Jun 2024' },
+    registration: { status: 'Registered SGR Khed', sgrOffice: 'Sub-Registrar Khed-1', transactionId: 'REG-2024-5501', registrationDate: '10 Jun 2024', deedType: 'MIDC Lease Deed', stampDutyStatus: 'Paid (₹ 35,00,000)' },
+    encumbrance: { mortgageStatus: 'Nil Mortgage', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Warehousing & Logistics', masterPlanZone: 'Zone I-1 MIDC', permittedUse: 'Logistics Park, Freight Terminal', buildingPermissionStatus: 'MIDC Sanctioned BP-2024-901' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-MIDC-1415', outstandingAmount: '₹ 0', taxedArea: '5.50 Ha' },
+    infrastructure: { electricity: 'MIDC HT Commercial Grid', water: 'MIDC Industrial Pipeline', roadAccess: '45m Chakan Industrial Expressway', drainage: 'Central Effluent Treatment Connection' },
+    restrictions: { environmental: 'Environmental Impact Assessment Clearance OK', planning: 'FSI Allowed: 1.25', otherRestrictions: 'Heavy Vehicle Turnaround Clearance Approved' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '18 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [],
+    timeline: [
+      { year: '2024', date: '10 Jun 2024', event: 'MIDC Logistics Allocation', details: 'Leased for Auto Freight Logistics terminal.' }
+    ]
+  },
+  {
+    id: '1256',
+    ulpin: 'MH-PUN-001256-1122',
+    surveyNo: '62/1',
+    village: 'Bhavdhan Extension',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411021',
+    area: '1.20 Ha',
+    areaRaw: 1.20,
+    center: [18.5220, 73.7810],
+    coordinates: [[18.5210, 73.7800], [18.5230, 73.7802], [18.5235, 73.7825], [18.5215, 73.7820], [18.5210, 73.7800]],
+    landUse: 'Residential', masterPlanZone: 'Zone R-1 Low Density', owner: 'Joshi Family Trust', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001256-1122', surveyNo: '62/1', subDivision: '1', areaHa: '1.20 Ha', areaSqM: '12,000 sq. m.', gisCoordinates: '18.522000 N, 73.781000 E', village: 'Bhavdhan Extension', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-6211', mutationNo: 'MUT-2023-11', primaryOwner: 'Joshi Family Trust', jointOwnersCount: 2, rightsType: 'Occupant Class I', lastMutationDate: '01 Jan 2023' },
+    registration: { status: 'Registered SGR Haveli-2', sgrOffice: 'Sub-Registrar Haveli-2', transactionId: 'REG-2022-9901', registrationDate: '20 Dec 2022', deedType: 'Trust Conveyance', stampDutyStatus: 'Paid (₹ 5,10,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Residential', masterPlanZone: 'Zone R-1', permittedUse: 'Group Housing', buildingPermissionStatus: 'PMC Sanctioned BP-2023-40' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PMC-6211', outstandingAmount: '₹ 0', taxedArea: '1.20 Ha' },
+    infrastructure: { electricity: 'PMC Power', water: 'PMC Corporation Water', roadAccess: '18m Road Frontage', drainage: 'Underground Sewage' },
+    restrictions: { environmental: 'Nil', planning: 'FSI Allowed: 1.10', otherRestrictions: 'None' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '19 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [], timeline: [{ year: '2022', date: '20 Dec 2022', event: 'Trust Settlement', details: 'Settled under Maharashtra Trust Act.' }]
+  },
+  {
+    id: '1257',
+    ulpin: 'MH-PUN-001257-3344',
+    surveyNo: '190/3',
+    village: 'Tathawade',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411033',
+    area: '2.05 Ha',
+    areaRaw: 2.05,
+    center: [18.6180, 73.7480],
+    coordinates: [[18.6170, 73.7460], [18.6195, 73.7465], [18.6200, 73.7495], [18.6175, 73.7490], [18.6170, 73.7460]],
+    landUse: 'Institutional / College', masterPlanZone: 'Zone E-1 Educational Campus Zone', owner: 'Sahyadri Education Society', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001257-3344', surveyNo: '190/3', subDivision: '3', areaHa: '2.05 Ha', areaSqM: '20,500 sq. m.', gisCoordinates: '18.618000 N, 73.748000 E', village: 'Tathawade', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 NA Educational', khataNo: 'KHA-1903', mutationNo: 'MUT-2021-998', primaryOwner: 'Sahyadri Education Society', jointOwnersCount: 1, rightsType: 'Occupant Class I', lastMutationDate: '10 Nov 2021' },
+    registration: { status: 'Registered SGR Haveli-4', sgrOffice: 'Sub-Registrar Haveli-4', transactionId: 'REG-2021-3310', registrationDate: '04 Nov 2021', deedType: 'Lease Conveyance', stampDutyStatus: 'Exempt Educational (₹ 0)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Educational Campus', masterPlanZone: 'Zone E-1', permittedUse: 'Colleges, University Campus', buildingPermissionStatus: 'PCMC Sanctioned BP-ED-2022-11' },
+    fiscal: { propertyTaxStatus: 'Paid (Exempt Tier)', assessmentId: 'TAX-PCMC-ED-1903', outstandingAmount: '₹ 0', taxedArea: '2.05 Ha' },
+    infrastructure: { electricity: 'Substation Connection', water: 'PCMC Bulk Connection', roadAccess: '24m Highway Access', drainage: 'STP Plant Installed' },
+    restrictions: { environmental: 'Nil', planning: 'FSI Allowed: 2.00', otherRestrictions: 'UGC Approval OK' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '20 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [], timeline: [{ year: '2021', date: '04 Nov 2021', event: 'Campus Allocation', details: 'Allocated under Higher Education Policy.' }]
+  },
+  {
+    id: '1258',
+    ulpin: 'MH-PUN-001258-5566',
+    surveyNo: '99/2',
+    village: 'Punawale',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411033',
+    area: '1.65 Ha',
+    areaRaw: 1.65,
+    center: [18.6250, 73.7410],
+    coordinates: [[18.6240, 73.7390], [18.6265, 73.7395], [18.6270, 73.7425], [18.6245, 73.7420], [18.6240, 73.7390]],
+    landUse: 'Residential', masterPlanZone: 'Zone R-2 Urban Density', owner: 'Punawale Heights LLP', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001258-5566', surveyNo: '99/2', subDivision: '2', areaHa: '1.65 Ha', areaSqM: '16,500 sq. m.', gisCoordinates: '18.625000 N, 73.741000 E', village: 'Punawale', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-9920', mutationNo: 'MUT-2024-411', primaryOwner: 'Punawale Heights LLP', jointOwnersCount: 2, rightsType: 'Occupant Class I', lastMutationDate: '08 Aug 2024' },
+    registration: { status: 'Registered SGR Haveli-4', sgrOffice: 'Sub-Registrar Haveli-4', transactionId: 'REG-2024-1902', registrationDate: '01 Aug 2024', deedType: 'Sale Deed', stampDutyStatus: 'Paid (₹ 11,20,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Residential', masterPlanZone: 'Zone R-2', permittedUse: 'Residential Apartments', buildingPermissionStatus: 'PCMC Sanctioned BP-2025-09' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PCMC-9920', outstandingAmount: '₹ 0', taxedArea: '1.65 Ha' },
+    infrastructure: { electricity: 'MSEDCL Grid', water: 'PCMC Corporation Pipeline', roadAccess: '18m DP Road', drainage: 'Underground Sewage' },
+    restrictions: { environmental: 'Nil', planning: 'FSI Allowed: 1.60', otherRestrictions: 'None' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '17 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [], timeline: [{ year: '2024', date: '01 Aug 2024', event: 'Land Purchase Conveyance', details: 'Registered title deed.' }]
+  },
+  {
+    id: '1259',
+    ulpin: 'MH-PUN-001259-7788',
+    surveyNo: '15/4',
+    village: 'Ravet',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '412101',
+    area: '2.30 Ha',
+    areaRaw: 2.30,
+    center: [18.6410, 73.7450],
+    coordinates: [[18.6400, 73.7430], [18.6425, 73.7435], [18.6430, 73.7465], [18.6405, 73.7460], [18.6400, 73.7430]],
+    landUse: 'Residential / Waterfront', masterPlanZone: 'Zone R-2 Waterfront Corridor', owner: 'Ravet Waterfront Developers', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001259-7788', surveyNo: '15/4', subDivision: '4', areaHa: '2.30 Ha', areaSqM: '23,000 sq. m.', gisCoordinates: '18.641000 N, 73.745000 E', village: 'Ravet', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Verified', khataNo: 'KHA-1540', mutationNo: 'MUT-2025-102', primaryOwner: 'Ravet Waterfront Developers', jointOwnersCount: 2, rightsType: 'Occupant Class I', lastMutationDate: '12 Feb 2025' },
+    registration: { status: 'Registered SGR Haveli-4', sgrOffice: 'Sub-Registrar Haveli-4', transactionId: 'REG-2025-0019', registrationDate: '05 Feb 2025', deedType: 'Conveyance Deed', stampDutyStatus: 'Paid (₹ 16,00,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Residential', masterPlanZone: 'Zone R-2', permittedUse: 'Luxury Towers', buildingPermissionStatus: 'PCMC Sanctioned BP-2025-220' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PCMC-1540', outstandingAmount: '₹ 0', taxedArea: '2.30 Ha' },
+    infrastructure: { electricity: 'Substation Connection', water: 'PCMC Water Pipeline', roadAccess: '24m Riverside Road', drainage: 'STP Plant Installed' },
+    restrictions: { environmental: 'Pavana River Flood Line Buffer Cleared', planning: 'FSI Allowed: 2.00', otherRestrictions: 'Flood Control Approval OK' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '18 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [], timeline: [{ year: '2025', date: '05 Feb 2025', event: 'Conveyance Deed Registered', details: 'Transferred for Waterfront project.' }]
+  },
+  {
+    id: '1260',
+    ulpin: 'MH-PUN-001260-9900',
+    surveyNo: '220/1',
+    village: 'Kiwale',
+    taluka: 'Haveli',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '412101',
+    area: '3.00 Ha',
+    areaRaw: 3.00,
+    center: [18.6550, 73.7380],
+    coordinates: [[18.6540, 73.7360], [18.6565, 73.7365], [18.6570, 73.7395], [18.6545, 73.7390], [18.6540, 73.7360]],
+    landUse: 'Commercial / Transit', masterPlanZone: 'Zone C-1 Expressway Transit Zone', owner: 'Expressway Commercial Hub Ltd', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001260-9900', surveyNo: '220/1', subDivision: '1', areaHa: '3.00 Ha', areaSqM: '30,000 sq. m.', gisCoordinates: '18.655000 N, 73.738000 E', village: 'Kiwale', taluka: 'Haveli', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Commercial NA', khataNo: 'KHA-2201', mutationNo: 'MUT-2024-770', primaryOwner: 'Expressway Commercial Hub Ltd', jointOwnersCount: 1, rightsType: 'Occupant Class I', lastMutationDate: '15 Oct 2024' },
+    registration: { status: 'Registered SGR Haveli-4', sgrOffice: 'Sub-Registrar Haveli-4', transactionId: 'REG-2024-6601', registrationDate: '08 Oct 2024', deedType: 'Sale Deed', stampDutyStatus: 'Paid (₹ 22,00,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Commercial Mall & Hotel', masterPlanZone: 'Zone C-1', permittedUse: 'Commercial Mall, Hotel, Transit Hub', buildingPermissionStatus: 'PCMC Sanctioned BP-2025-18' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-PCMC-2201', outstandingAmount: '₹ 0', taxedArea: '3.00 Ha' },
+    infrastructure: { electricity: 'Commercial High Capacity Line', water: 'PCMC Water Connection', roadAccess: '60m Mumbai-Pune Expressway Junction', drainage: 'Underground Sewer Grid' },
+    restrictions: { environmental: 'Expressway Highway Buffer Cleared', planning: 'FSI Allowed: 2.50', otherRestrictions: 'MSRDC Clearance Approved' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '19 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [], timeline: [{ year: '2024', date: '08 Oct 2024', event: 'Transit Hub Acquisition', details: 'Acquired for Expressway commercial plaza.' }]
+  },
+  {
+    id: '1261',
+    ulpin: 'MH-PUN-001261-1144',
+    surveyNo: '33/2',
+    village: 'Nere',
+    taluka: 'Mulshi',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411057',
+    area: '3.80 Ha',
+    areaRaw: 3.80,
+    center: [18.6120, 73.7050],
+    coordinates: [[18.6110, 73.7030], [18.6135, 73.7035], [18.6140, 73.7065], [18.6115, 73.7060], [18.6110, 73.7030]],
+    landUse: 'Agricultural', masterPlanZone: 'Zone A-1 Agricultural Zone', owner: 'Deshmukh Farmers Collective', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001261-1144', surveyNo: '33/2', subDivision: '2', areaHa: '3.80 Ha', areaSqM: '38,000 sq. m.', gisCoordinates: '18.612000 N, 73.705000 E', village: 'Nere', taluka: 'Mulshi', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 (Crop: Polyhouse Flowers)', khataNo: 'KHA-3320', mutationNo: 'MUT-2022-104', primaryOwner: 'Deshmukh Farmers Collective', jointOwnersCount: 3, rightsType: 'Occupant Class I', lastMutationDate: '10 Jun 2022' },
+    registration: { status: 'Registered SGR Mulshi-2', sgrOffice: 'Sub-Registrar Mulshi-2', transactionId: 'REG-2022-0044', registrationDate: '01 Jun 2022', deedType: 'Agri Lease Deed', stampDutyStatus: 'Paid (₹ 1,50,000)' },
+    encumbrance: { mortgageStatus: 'NABARD Agri Loan Charge', bankName: 'Bank of Maharashtra (Nere)', loanAmount: '₹ 2,500,000', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Agri Polyhouse', masterPlanZone: 'Zone A-1', permittedUse: 'Polyhouse Farming, Floriculture', buildingPermissionStatus: 'Polyhouse Permission Sanctioned' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-GP-NERE-332', outstandingAmount: '₹ 0', taxedArea: '3.80 Ha' },
+    infrastructure: { electricity: 'Agri Solar Power Hybrid', water: 'Drip Irrigation System', roadAccess: '12m Village Road', drainage: 'Natural Canal' },
+    restrictions: { environmental: 'Nil', planning: 'Agri Polyhouse Exemption', otherRestrictions: 'None' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '16 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '98%' },
+    issues: [], timeline: [{ year: '2022', date: '01 Jun 2022', event: 'Polyhouse Lease Deed', details: 'Leased for Floriculture Polyhouse.' }]
+  },
+  {
+    id: '1262',
+    ulpin: 'MH-PUN-001262-2255',
+    surveyNo: '105/1',
+    village: 'Kasarsai',
+    taluka: 'Mulshi',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '411057',
+    area: '4.90 Ha',
+    areaRaw: 4.90,
+    center: [18.6250, 73.6890],
+    coordinates: [[18.6240, 73.6870], [18.6265, 73.6875], [18.6270, 73.6905], [18.6245, 73.6900], [18.6240, 73.6870]],
+    landUse: 'Agri-Tourism / Resort', masterPlanZone: 'Zone T-1 Eco-Tourism Zone', owner: 'Kasarsai Lake Resort LLP', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001262-2255', surveyNo: '105/1', subDivision: '1', areaHa: '4.90 Ha', areaSqM: '49,000 sq. m.', gisCoordinates: '18.625000 N, 73.689000 E', village: 'Kasarsai', taluka: 'Mulshi', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 Tourism NA', khataNo: 'KHA-1051', mutationNo: 'MUT-2023-882', primaryOwner: 'Kasarsai Lake Resort LLP', jointOwnersCount: 2, rightsType: 'Occupant Class I', lastMutationDate: '19 Sep 2023' },
+    registration: { status: 'Registered SGR Mulshi-2', sgrOffice: 'Sub-Registrar Mulshi-2', transactionId: 'REG-2023-9902', registrationDate: '12 Sep 2023', deedType: 'Agri-Tourism Conveyance', stampDutyStatus: 'Paid (₹ 14,00,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Eco Resort', masterPlanZone: 'Zone T-1', permittedUse: 'Agri-Tourism, Cottages', buildingPermissionStatus: 'PMRDA Tourism Sanction TOU-2023-44' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-GP-KASARSAI-105', outstandingAmount: '₹ 0', taxedArea: '4.90 Ha' },
+    infrastructure: { electricity: '11kV Line', water: 'Lake Water Treatment Plant', roadAccess: '15m Dam Road', drainage: 'Bio-Digester System' },
+    restrictions: { environmental: 'Kasarsai Dam 100m Catchment Buffer Clearance OK', planning: 'FSI Allowed: 0.50 Eco Tier', otherRestrictions: 'Maharashtra Tourism Board Approval OK' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '15 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '99%' },
+    issues: [], timeline: [{ year: '2023', date: '12 Sep 2023', event: 'Eco Tourism Registration', details: 'Sanctioned under Eco-Tourism Policy.' }]
+  },
+  {
+    id: '1263',
+    ulpin: 'MH-PUN-001263-6677',
+    surveyNo: '14/2',
+    village: 'Godumbare',
+    taluka: 'Maval',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '410506',
+    area: '2.60 Ha',
+    areaRaw: 2.60,
+    center: [18.6820, 73.6950],
+    coordinates: [[18.6810, 73.6930], [18.6835, 73.6935], [18.6840, 73.6965], [18.6815, 73.6960], [18.6810, 73.6930]],
+    landUse: 'Agricultural', masterPlanZone: 'Zone A-1 Agricultural Zone', owner: 'Gawade Farmers Trust', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001263-6677', surveyNo: '14/2', subDivision: '2', areaHa: '2.60 Ha', areaSqM: '26,000 sq. m.', gisCoordinates: '18.682000 N, 73.695000 E', village: 'Godumbare', taluka: 'Maval', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 (Rice Crop)', khataNo: 'KHA-1420', mutationNo: 'MUT-2022-301', primaryOwner: 'Gawade Farmers Trust', jointOwnersCount: 2, rightsType: 'Occupant Class I', lastMutationDate: '14 Apr 2022' },
+    registration: { status: 'Registered SGR Maval', sgrOffice: 'Sub-Registrar Maval-1', transactionId: 'REG-2022-1044', registrationDate: '08 Apr 2022', deedType: 'Trust Partition Deed', stampDutyStatus: 'Paid (₹ 1,20,000)' },
+    encumbrance: { mortgageStatus: 'Nil Charge', bankName: 'N/A', loanAmount: 'N/A', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Paddy Agriculture', masterPlanZone: 'Zone A-1', permittedUse: 'Farming', buildingPermissionStatus: 'N/A' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-GP-GODUMBARE-14', outstandingAmount: '₹ 0', taxedArea: '2.60 Ha' },
+    infrastructure: { electricity: 'Agri Feeder 5HP', water: 'Indrayani Canal Line', roadAccess: '9m Tar Road', drainage: 'Natural Stream' },
+    restrictions: { environmental: 'River Buffer OK', planning: 'No Heavy Construction', otherRestrictions: 'None' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '14 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '98%' },
+    issues: [], timeline: [{ year: '2022', date: '08 Apr 2022', event: 'Family Partition Deed', details: 'Registered under Maharashtra Land Revenue Code.' }]
+  },
+  {
+    id: '1264',
+    ulpin: 'MH-PUN-001264-8899',
+    surveyNo: '81/3',
+    village: 'Chandkhed',
+    taluka: 'Maval',
+    district: 'Pune',
+    state: 'Maharashtra',
+    pinCode: '410506',
+    area: '3.40 Ha',
+    areaRaw: 3.40,
+    center: [18.6950, 73.6710],
+    coordinates: [[18.6940, 73.6690], [18.6965, 73.6695], [18.6970, 73.6725], [18.6945, 73.6720], [18.6940, 73.6690]],
+    landUse: 'Agricultural / Dairy Farm', masterPlanZone: 'Zone A-1 Agricultural Zone', owner: 'Maval Dairy Producers Cooperative', ownershipStatus: 'Verified Registered Owner', verificationStatus: 'VERIFIED',
+    statusSummary: { ownership: 'OK', registration: 'OK', encumbrance: 'OK', landUse: 'OK', buildingPermission: 'OK', propertyTax: 'OK', dataConsistency: 'OK', satelliteChange: 'NONE' },
+    identity: { ulpin: 'MH-PUN-001264-8899', surveyNo: '81/3', subDivision: '3', areaHa: '3.40 Ha', areaSqM: '34,000 sq. m.', gisCoordinates: '18.695000 N, 73.671000 E', village: 'Chandkhed', taluka: 'Maval', district: 'Pune', state: 'Maharashtra (27)' },
+    ownership: { rorStatus: 'Active 7/12 (Dairy Farm)', khataNo: 'KHA-8130', mutationNo: 'MUT-2024-110', primaryOwner: 'Maval Dairy Producers Co-op', jointOwnersCount: 5, rightsType: 'Occupant Class I', lastMutationDate: '30 May 2024' },
+    registration: { status: 'Registered SGR Maval', sgrOffice: 'Sub-Registrar Maval-1', transactionId: 'REG-2024-0081', registrationDate: '22 May 2024', deedType: 'Co-op Lease Deed', stampDutyStatus: 'Paid (₹ 2,40,000)' },
+    encumbrance: { mortgageStatus: 'District Co-op Bank Charge', bankName: 'Pune District Central Co-op Bank', loanAmount: '₹ 5,000,000', disputeIndicator: 'Nil' },
+    landUsePlanning: { currentLandUse: 'Dairy Farming Sheds', masterPlanZone: 'Zone A-1', permittedUse: 'Dairy Cattle Sheds, Fodder Cultivation', buildingPermissionStatus: 'Cattle Shed Permit Approved' },
+    fiscal: { propertyTaxStatus: 'Paid', assessmentId: 'TAX-GP-CHANDKHED-81', outstandingAmount: '₹ 0', taxedArea: '3.40 Ha' },
+    infrastructure: { electricity: '10HP Commercial Agri Line', water: 'Borewell & Water Shed', roadAccess: '12m Village Road', drainage: 'Biogas Waste System' },
+    restrictions: { environmental: 'Nil', planning: 'Agri Cattle Shed Exemption', otherRestrictions: 'Veterinary Clearance OK' },
+    spatialIntelligence: { changeStatus: 'Verified Baseline', lastSatelliteScan: '17 Sep 2026', detectedStructureArea: '0 sq. m.', confidenceScore: '98%' },
+    issues: [], timeline: [{ year: '2024', date: '22 May 2024', event: 'Dairy Co-op Lease', details: 'Leased under Maharashtra Co-operative Societies Act.' }]
+  }
+];
 
 // Mock Workflows
 export const MOCK_WORKFLOWS = [
   {
     id: 'WF-2026-801',
-    ulpin: 'MH-PUN-001245',
+    ulpin: 'MH-PUN-001245-6789',
     title: 'Unsanctioned Construction & Area Mismatch Audit',
     type: 'SPATIAL_ANOMALY',
     triggerEvent: 'Geo-AI Change Detection & Rule Check',
     assignedDepartment: 'Planning & Revenue Department',
-    assignedOfficer: 'Officer S. K. Kulkarni (Revenue Inspector)',
+    assignedOfficer: 'Anil Sharma (Revenue Officer)',
     createdDate: '28 Sep 2026',
     status: 'IN_PROGRESS',
     priority: 'HIGH',
@@ -250,12 +791,12 @@ export const MOCK_WORKFLOWS = [
   },
   {
     id: 'WF-2026-802',
-    ulpin: 'MH-PUN-001247',
+    ulpin: 'MH-PUN-001247-3310',
     title: 'Ownership Name Inconsistency Resolution',
     type: 'REGISTRATION_EVENT',
     triggerEvent: 'Sub-Registrar Deed Conveyance Upload',
     assignedDepartment: 'Registration & Revenue Department',
-    assignedOfficer: 'Officer M. N. Deshpande (Sub-Registrar)',
+    assignedOfficer: 'M. N. Deshpande (Sub-Registrar)',
     createdDate: '26 Sep 2026',
     status: 'PENDING_OFFICER_ACTION',
     priority: 'HIGH',
@@ -268,75 +809,29 @@ export const MOCK_WORKFLOWS = [
   },
   {
     id: 'WF-2026-803',
-    ulpin: 'MH-PUN-001249',
-    title: 'Property Tax Dues Clear Audit',
-    type: 'FISCAL_AUDIT',
-    triggerEvent: 'Municipal Property Tax Assessment Integration',
-    assignedDepartment: 'Municipal Corporation (PMRDA)',
-    assignedOfficer: 'Officer P. V. Joshi (Tax Inspector)',
+    ulpin: 'MH-PUN-001252-4412',
+    title: 'Non-Agricultural (NA) Land-Use Violation Enforcement',
+    type: 'LAND_USE_VIOLATION',
+    triggerEvent: 'Satellite Commercial Shed Detection',
+    assignedDepartment: 'Revenue Tehsildar Office',
+    assignedOfficer: 'Anil Sharma (Revenue Officer)',
     createdDate: '25 Sep 2026',
-    status: 'RESOLVED',
-    priority: 'LOW',
+    status: 'IN_PROGRESS',
+    priority: 'HIGH',
     steps: [
-      { name: 'Tax Discrepancy Flagged', status: 'COMPLETED', date: '25 Sep 2026 08:00 AM' },
-      { name: 'Challan Payment Verified', status: 'COMPLETED', date: '26 Sep 2026 01:20 PM' },
-      { name: 'Tax Clearance Certificate Synced', status: 'COMPLETED', date: '27 Sep 2026 05:00 PM' }
+      { name: 'Commercial Shed Flagged on 7/12 Agri Plot', status: 'COMPLETED', date: '25 Sep 2026 08:00 AM' },
+      { name: 'NA Order Verification', status: 'COMPLETED', date: '26 Sep 2026 01:20 PM' },
+      { name: 'Issue Section 44 NA Enforcement Notice', status: 'IN_PROGRESS', date: 'Pending' }
     ]
   }
 ];
 
 // Mock Audit Logs
 export const MOCK_AUDIT_LOGS = [
-  {
-    id: 'AUD-9021',
-    officerId: 'REV-1023 (S. K. Kulkarni)',
-    ulpin: 'MH-PUN-001245',
-    action: 'Viewed Encumbrance Record & Spatial Change Report',
-    department: 'Revenue & Land Records',
-    timestamp: '30 Sep 2026, 10:42 AM',
-    ipAddress: '10.240.12.84',
-    status: 'SUCCESS'
-  },
-  {
-    id: 'AUD-9020',
-    officerId: 'REG-4012 (M. N. Deshpande)',
-    ulpin: 'MH-PUN-001247',
-    action: 'Triggered Ownership Discrepancy Notice Workflow',
-    department: 'Registration & Stamps',
-    timestamp: '30 Sep 2026, 09:15 AM',
-    ipAddress: '10.240.15.19',
-    status: 'SUCCESS'
-  },
-  {
-    id: 'AUD-9019',
-    officerId: 'CIT-DEMO-99',
-    ulpin: 'MH-PUN-001245',
-    action: 'Citizen Requested Due-Diligence Summary',
-    department: 'Citizen Self-Service Portal',
-    timestamp: '29 Sep 2026, 04:30 PM',
-    ipAddress: '157.33.201.44',
-    status: 'SUCCESS'
-  },
-  {
-    id: 'AUD-9018',
-    officerId: 'PLN-8821 (A. R. Patil)',
-    ulpin: 'MH-PUN-001249',
-    action: 'Cross-checked Master Plan R-2 Zoning Buffer',
-    department: 'PMRDA Planning Authority',
-    timestamp: '29 Sep 2026, 02:10 PM',
-    ipAddress: '10.240.8.102',
-    status: 'SUCCESS'
-  },
-  {
-    id: 'AUD-9017',
-    officerId: 'SYSTEM_GEO_AI',
-    ulpin: 'MH-PUN-001245',
-    action: 'Automated Satellite Imagery Change Detection Run',
-    department: 'Geo-AI Processing Engine',
-    timestamp: '28 Sep 2026, 09:00 AM',
-    ipAddress: 'INTERNAL_DAEMON',
-    status: 'ALERT_GENERATED'
-  }
+  { id: 'AUD-9021', officerId: 'Anil Sharma (Revenue Officer)', ulpin: 'MH-PUN-001245-6789', action: 'Viewed Encumbrance Record & Spatial Change Report', department: 'Revenue & Land Records', timestamp: '30 Sep 2026, 10:42 AM', status: 'SUCCESS' },
+  { id: 'AUD-9020', officerId: 'M. N. Deshpande (Sub-Registrar)', ulpin: 'MH-PUN-001247-3310', action: 'Triggered Ownership Discrepancy Notice Workflow', department: 'Registration & Stamps', timestamp: '30 Sep 2026, 09:15 AM', status: 'SUCCESS' },
+  { id: 'AUD-9019', officerId: 'Rohan Patil (Citizen)', ulpin: 'MH-PUN-001245-6789', action: 'Citizen Requested Due-Diligence Summary', department: 'Citizen Self-Service Portal', timestamp: '29 Sep 2026, 04:30 PM', status: 'SUCCESS' },
+  { id: 'AUD-9018', officerId: 'Prakash Joshi (Planning Officer)', ulpin: 'MH-PUN-001252-4412', action: 'Cross-checked Master Plan Agri Buffer', department: 'PMRDA Planning Authority', timestamp: '29 Sep 2026, 02:10 PM', status: 'SUCCESS' }
 ];
 
 // State Mapping Adapters
@@ -352,32 +847,6 @@ export const STATE_ADAPTERS = [
       ownerName: 'Khatedar / Occupant',
       areaUnit: 'Hectare-Acre-Guntha',
       encumbrance: 'Boja / Mortgage Entry'
-    }
-  },
-  {
-    state: 'Tamil Nadu',
-    code: 'TN',
-    localTerm: 'Patta / Chitta & A-Register',
-    rorSource: 'Anytime Anywhere e-Services (e-Patta)',
-    cadastralSource: 'Collabland FMB GIS',
-    commonMapping: {
-      surveyNumber: 'Survey No / Sub-Division',
-      ownerName: 'Pattadar Name',
-      areaUnit: 'Hectare-Are / Hectare-Sq.m',
-      encumbrance: 'EC (Encumbrance Certificate)'
-    }
-  },
-  {
-    state: 'Karnataka',
-    code: 'KA',
-    localTerm: 'Bhoomi RTC (Record of Rights, Tenancy & Crop)',
-    rorSource: 'Bhoomi Portal Engine',
-    cadastralSource: 'Mojini GIS Cadastral',
-    commonMapping: {
-      surveyNumber: 'Survey / Hissa No',
-      ownerName: 'Khata Holder',
-      areaUnit: 'Acre-Gunta',
-      encumbrance: 'Bank Charge Entry'
     }
   }
 ];
