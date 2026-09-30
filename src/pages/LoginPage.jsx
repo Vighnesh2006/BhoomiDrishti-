@@ -1,122 +1,142 @@
 import React, { useState } from 'react';
-import { UserCheck, ShieldCheck, Lock, ArrowRight, Building2, User, KeyRound } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 
-export default function LoginPage({ setUserRole, navigate }) {
-  const [selectedRole, setSelectedRole] = useState('Revenue Officer');
+export default function LoginPage({ navigate, setUserRole }) {
+  const [activeTab, setActiveTab] = useState('email');
+  const [email, setEmail] = useState('demo.officer@bhoomidrishti.gov.in');
+  const [password, setPassword] = useState('••••••••••••');
+  const [showPassword, setShowPassword] = useState(false);
 
-  const demoRoles = [
-    {
-      role: 'Revenue Officer',
-      dept: 'Department of Land Revenue & Survey',
-      desc: 'Access mutation audits, 7/12 consistency checks, and field verification workflows.',
-      redirect: '/officer',
-      color: '#0757A0'
-    },
-    {
-      role: 'Registration Officer',
-      dept: 'Department of Stamps & Registration',
-      desc: 'Verify title conveyance deeds, deed history, and encumbrance certificates.',
-      redirect: '/verification',
-      color: '#063B6D'
-    },
-    {
-      role: 'Planning Officer',
-      dept: 'Urban & Metropolitan Planning Authority (PMRDA)',
-      desc: 'Inspect master plan compliance, zoning restrictions, and satellite change alerts.',
-      redirect: '/changes',
-      color: '#D88900'
-    },
-    {
-      role: 'Citizen',
-      dept: 'Public Self-Service Due-Diligence Portal',
-      desc: 'Access verified land reports, service requests, and public parcel information.',
-      redirect: '/citizen',
-      color: '#16803C'
-    },
-    {
-      role: 'Administrator',
-      dept: 'State Land Governance Technology Portal',
-      desc: 'Configure state adapters, API integrations, data sources, and audit permissions.',
-      redirect: '/admin',
-      color: '#475467'
-    }
-  ];
-
-  const handleLogin = (roleObj) => {
-    setUserRole(roleObj.role);
-    navigate(roleObj.redirect);
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    navigate('/roles');
   };
 
   return (
-    <div className="content-container" style={{ maxWidth: '900px', margin: '2rem auto' }}>
-      <div className="card">
-        <div className="card-header" style={{ backgroundColor: '#063B6D', color: '#FFFFFF', padding: '1.25rem 1.5rem' }}>
-          <div>
-            <h2 className="card-title" style={{ color: '#FFFFFF', fontSize: '1.3rem' }}>
-              <Lock size={20} /> LAND STACK — Institutional Portal Login
-            </h2>
-            <div style={{ fontSize: '0.82rem', color: '#93C5FD', marginTop: '0.2rem' }}>
-              State Governance & Verification Platform Prototype Login
-            </div>
-          </div>
-          <span className="status-pill success" style={{ background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)' }}>
-            Prototype Sandbox
-          </span>
+    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Top Header */}
+      <div style={{ padding: '1.25rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', cursor: 'pointer' }} onClick={() => navigate('/')}>
+          BhoomiDrishti
         </div>
+        <button 
+          onClick={() => navigate('/')} 
+          style={{ background: 'none', border: 'none', color: '#64748B', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+        >
+          <ArrowLeft size={16} /> Back to Home
+        </button>
+      </div>
 
-        <div className="card-body" style={{ padding: '1.75rem' }}>
-          <div className="alert alert-info" style={{ marginBottom: '1.5rem' }}>
-            <KeyRound size={18} />
-            <div>
-              <strong>Prototype Demonstration Mode:</strong> Select any government role below to log in instantly without entering credentials.
-            </div>
+      {/* Main Centered Sign In Card */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '2.5rem', width: '100%', maxWidth: '440px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.3rem' }}>
+              Welcome Back
+            </h1>
+            <p style={{ fontSize: '0.88rem', color: '#64748B' }}>
+              Sign in to continue to BhoomiDrishti
+            </p>
           </div>
 
-          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#063B6D', marginBottom: '1rem' }}>
-            Select Demo Role Persona:
-          </h3>
+          {/* Email / Google Tabs */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #E2E8F0', marginBottom: '1.5rem' }}>
+            <button
+              onClick={() => setActiveTab('email')}
+              style={{
+                padding: '0.65rem',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === 'email' ? '2.5px solid #1D4ED8' : 'none',
+                color: activeTab === 'email' ? '#1D4ED8' : '#64748B',
+                fontWeight: activeTab === 'email' ? 700 : 500,
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
+              Email
+            </button>
+            <button
+              onClick={() => setActiveTab('google')}
+              style={{
+                padding: '0.65rem',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === 'google' ? '2.5px solid #1D4ED8' : 'none',
+                color: activeTab === 'google' ? '#1D4ED8' : '#64748B',
+                fontWeight: activeTab === 'google' ? 700 : 500,
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
+              Google
+            </button>
+          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-            {demoRoles.map((item) => (
-              <div
-                key={item.role}
-                style={{
-                  border: `2px solid ${selectedRole === item.role ? item.color : '#D0D5DD'}`,
-                  backgroundColor: selectedRole === item.role ? '#EAF4FC' : '#FFFFFF',
-                  borderRadius: '6px',
-                  padding: '1.1rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
-                onClick={() => setSelectedRole(item.role)}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: item.color }}>
-                    {item.role}
-                  </span>
-                  {selectedRole === item.role && <UserCheck size={18} color={item.color} />}
-                </div>
+          {/* Sign In Form */}
+          <form onSubmit={handleSignIn}>
+            {/* Email Field */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ position: 'relative' }}>
+                <Mail size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '12px' }} />
+                <input
+                  type="email"
+                  className="input-field"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  style={{ paddingLeft: '38px', height: '42px' }}
+                  required
+                />
+              </div>
+            </div>
 
-                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#667085', marginBottom: '0.5rem' }}>
-                  {item.dept}
-                </div>
-
-                <p style={{ fontSize: '0.8rem', color: '#475467', lineHeight: 1.4, marginBottom: '0.8rem' }}>
-                  {item.desc}
-                </p>
-
+            {/* Password Field */}
+            <div style={{ marginBottom: '0.75rem' }}>
+              <div style={{ position: 'relative' }}>
+                <Lock size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '12px' }} />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="input-field"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  style={{ paddingLeft: '38px', paddingRight: '38px', height: '42px' }}
+                  required
+                />
                 <button
-                  className="btn btn-sm btn-primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleLogin(item);
-                  }}
-                  style={{ width: '100%', backgroundColor: item.color }}
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ position: 'absolute', right: '12px', top: '12px', background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
                 >
-                  Log In as {item.role} <ArrowRight size={14} />
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-            ))}
+            </div>
+
+            {/* Forgot password */}
+            <div style={{ textAlign: 'right', marginBottom: '1.5rem' }}>
+              <a href="#forgot" onClick={(e) => { e.preventDefault(); navigate('/roles'); }} style={{ fontSize: '0.82rem', color: '#1D4ED8', fontWeight: 600, textDecoration: 'none' }}>
+                Forgot password?
+              </a>
+            </div>
+
+            {/* Sign In Button */}
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%', height: '44px', backgroundColor: '#1D4ED8', fontSize: '0.95rem', borderRadius: '6px' }}
+            >
+              Sign In
+            </button>
+          </form>
+
+          {/* Sign Up Footer */}
+          <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#64748B' }}>
+            Don't have an account?{' '}
+            <a href="#signup" onClick={(e) => { e.preventDefault(); navigate('/roles'); }} style={{ color: '#1D4ED8', fontWeight: 700, textDecoration: 'none' }}>
+              Sign Up
+            </a>
           </div>
         </div>
       </div>

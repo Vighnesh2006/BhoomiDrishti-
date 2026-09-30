@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from './components/Layout';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
+import RoleSelectionPage from './pages/RoleSelectionPage';
 import GisExplorerPage from './pages/GisExplorerPage';
 import ParcelDigitalTwinPage from './pages/ParcelDigitalTwinPage';
 import VerificationPage from './pages/VerificationPage';
@@ -16,7 +17,7 @@ import AdminPage from './pages/AdminPage';
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
   const [selectedState, setSelectedState] = useState('MH');
-  const [userRole, setUserRole] = useState('Revenue Officer');
+  const [userRole, setUserRole] = useState('Department Officer');
 
   useEffect(() => {
     const handlePopState = () => {
@@ -39,6 +40,9 @@ export default function App() {
     }
     if (currentPath === '/login') {
       return <LoginPage setUserRole={setUserRole} navigate={navigate} />;
+    }
+    if (currentPath === '/roles') {
+      return <RoleSelectionPage setUserRole={setUserRole} navigate={navigate} />;
     }
     if (currentPath === '/explorer' || currentPath.startsWith('/explorer')) {
       const urlParams = new URLSearchParams(window.location.search);

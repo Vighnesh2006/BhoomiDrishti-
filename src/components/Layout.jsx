@@ -1,139 +1,135 @@
 import React, { useState } from 'react';
 import { 
-  Map, 
-  Layers, 
+  LayoutDashboard, 
+  Search, 
   CheckCircle2, 
   AlertTriangle, 
-  GitPullRequest, 
-  UserCheck, 
-  LayoutDashboard, 
-  Share2, 
   FileText, 
-  Settings, 
-  LogOut, 
-  ShieldCheck, 
-  Search, 
-  ChevronRight,
-  Sparkles,
-  Building2,
-  Home
+  FolderKanban, 
+  ChevronDown,
+  User,
+  LogOut,
+  Layers,
+  Settings
 } from 'lucide-react';
 
 export default function Layout({ 
   children, 
   activeRoute, 
   navigate, 
-  selectedState, 
-  setSelectedState, 
   userRole, 
-  setUserRole, 
-  onRunDemoStory 
+  setUserRole 
 }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
-  const navItems = [
-    { id: 'landing', label: 'Landing Page', icon: Home, route: '/' },
-    { id: 'explorer', label: 'GIS Parcel Explorer', icon: Map, route: '/explorer' },
-    { id: 'digital-twin', label: 'Parcel Digital Twin', icon: Layers, route: '/parcel/MH-PUN-001245' },
-    { id: 'verification', label: 'Verification Center', icon: CheckCircle2, route: '/verification', badge: '5 Issues' },
-    { id: 'changes', label: 'Spatial Change Detection', icon: AlertTriangle, route: '/changes', badge: '3 Alerts' },
-    { id: 'workflows', label: 'Department Workflow', icon: GitPullRequest, route: '/workflows', badge: '3 Active' },
-    { id: 'citizen', label: 'Citizen Portal', icon: UserCheck, route: '/citizen' },
-    { id: 'officer', label: 'Officer Dashboard', icon: LayoutDashboard, route: '/officer' },
-    { id: 'interoperability', label: 'API & Interoperability', icon: Share2, route: '/interoperability' },
-    { id: 'audit', label: 'Audit Trail & Security', icon: ShieldCheck, route: '/audit' },
-    { id: 'admin', label: 'Administration', icon: Settings, route: '/admin' }
+  // If on landing, login, or role selection page, render without dashboard wrapper
+  if (activeRoute === '/' || activeRoute === '/login' || activeRoute === '/roles') {
+    return <>{children}</>;
+  }
+
+  const isCitizen = userRole === 'Citizen';
+  const isOfficer = userRole === 'Department Officer' || userRole === 'Revenue Officer';
+  const isPlanner = userRole === 'Planning Authority' || userRole === 'Planning Officer';
+
+  const userName = isCitizen ? 'Rohan Patil' : isPlanner ? 'Prakash Joshi' : 'Anil Sharma';
+  const roleDisplay = isCitizen ? 'Citizen' : isPlanner ? 'Planning Authority' : 'Department Officer';
+
+  // Navigation Items matching Mockup Panels
+  const navItems = isCitizen ? [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, route: '/officer' },
+    { id: 'search', label: 'Parcel Search', icon: Search, route: '/explorer' },
+    { id: 'applications', label: 'My Applications', icon: FolderKanban, route: '/citizen' },
+    { id: 'reports', label: 'Reports', icon: FileText, route: '/parcel/MH-PUN-001245-6789' }
+  ] : [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, route: '/officer' },
+    { id: 'search', label: 'Parcel Search', icon: Search, route: '/explorer' },
+    { id: 'consistency', label: 'Consistency Check', icon: CheckCircle2, route: '/verification' },
+    { id: 'change', label: 'Change Detection', icon: AlertTriangle, route: '/changes' },
+    { id: 'applications', label: 'Applications', icon: FolderKanban, route: '/workflows' },
+    { id: 'reports', label: 'Reports', icon: FileText, route: '/audit' }
   ];
 
   return (
     <div className="app-container">
-      {/* Top Header */}
+      {/* Top Header matching Mockup */}
       <header className="topbar">
-        <div className="topbar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <div className="topbar-logo-icon">LS</div>
-          <div>
-            <div className="topbar-title">LAND STACK</div>
-            <div style={{ fontSize: '0.68rem', color: '#93C5FD', fontWeight: 600, letterSpacing: '0.4px' }}>
-              INTELLIGENT PARCEL GOVERNANCE
-            </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="topbar-brand" onClick={() => navigate('/')}>
+            BhoomiDrishti
           </div>
-          <span className="topbar-tagline">
-            "One Parcel. One Identity. Connected Data. Intelligent Governance."
+          <span style={{ color: '#94A3B8', fontSize: '0.9rem' }}>|</span>
+          <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#64748B' }}>
+            {roleDisplay}
           </span>
         </div>
 
-        <div className="topbar-actions">
-          {/* State Badge: Exclusive Maharashtra Prototype Focus */}
-          <div className="state-badge">
-            <Building2 size={14} color="#93C5FD" />
-            <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '0.8rem' }}>
-              State: Maharashtra (Pune District Prototype)
-            </span>
+        {/* User Profile Dropdown */}
+        <div style={{ position: 'relative' }}>
+          <div 
+            className="user-profile-badge" 
+            onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+          >
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <User size={16} />
+            </div>
+            <span>{userName}</span>
+            <ChevronDown size={14} color="#64748B" />
           </div>
 
-          {/* Role Switcher */}
-          <select 
-            className="role-selector"
-            value={userRole}
-            onChange={(e) => setUserRole(e.target.value)}
-          >
-            <option value="Revenue Officer">Role: Revenue Officer</option>
-            <option value="Registration Officer">Role: Registration Officer</option>
-            <option value="Planning Officer">Role: Planning Officer</option>
-            <option value="Citizen">Role: Citizen</option>
-            <option value="Administrator">Role: System Admin</option>
-          </select>
-
-          <button 
-            className="btn btn-sm btn-secondary" 
-            onClick={() => navigate('/login')}
-            style={{ fontSize: '0.75rem' }}
-          >
-            <LogOut size={13} /> Switch Login
-          </button>
+          {profileDropdownOpen && (
+            <div style={{
+              position: 'absolute',
+              right: 0,
+              top: '42px',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: '8px',
+              padding: '0.5rem 0',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+              zIndex: 1000,
+              minWidth: '180px'
+            }}>
+              <div style={{ padding: '0.4rem 1rem', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', borderBottom: '1px solid #F1F5F9' }}>
+                SWITCH ROLE DEMO
+              </div>
+              <a 
+                href="#citizen" 
+                onClick={(e) => { e.preventDefault(); setUserRole('Citizen'); setProfileDropdownOpen(false); navigate('/explorer'); }}
+                style={{ display: 'block', padding: '0.4rem 1rem', fontSize: '0.85rem', color: '#0F172A', textDecoration: 'none' }}
+              >
+                Citizen Role
+              </a>
+              <a 
+                href="#officer" 
+                onClick={(e) => { e.preventDefault(); setUserRole('Department Officer'); setProfileDropdownOpen(false); navigate('/verification'); }}
+                style={{ display: 'block', padding: '0.4rem 1rem', fontSize: '0.85rem', color: '#0F172A', textDecoration: 'none' }}
+              >
+                Department Officer Role
+              </a>
+              <div style={{ borderTop: '1px solid #F1F5F9', marginTop: '0.4rem', paddingTop: '0.4rem' }}>
+                <a 
+                  href="#logout" 
+                  onClick={(e) => { e.preventDefault(); setProfileDropdownOpen(false); navigate('/login'); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 1rem', fontSize: '0.85rem', color: '#DC2626', textDecoration: 'none' }}
+                >
+                  <LogOut size={14} /> Switch Persona
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
-      {/* SIH Presentation Demo Story Bar */}
-      <div className="demo-story-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <Sparkles size={16} color="#0757A0" />
-          <strong style={{ color: '#063B6D' }}>SIH End-to-End Judge Walkthrough Flow:</strong>
-        </div>
-        
-        <div className="demo-story-steps">
-          <button className="demo-step-btn" onClick={() => navigate('/explorer?ulpin=MH-PUN-001245')}>
-            1. GIS Search ULPIN
-          </button>
-          <ChevronRight size={14} color="#667085" />
-          <button className="demo-step-btn" onClick={() => navigate('/parcel/MH-PUN-001245')}>
-            2. Parcel Digital Twin
-          </button>
-          <ChevronRight size={14} color="#667085" />
-          <button className="demo-step-btn" onClick={() => navigate('/verification')}>
-            3. Consistency Engine
-          </button>
-          <ChevronRight size={14} color="#667085" />
-          <button className="demo-step-btn" onClick={() => navigate('/changes')}>
-            4. Geo-AI Satellite Alert
-          </button>
-          <ChevronRight size={14} color="#667085" />
-          <button className="demo-step-btn" onClick={() => navigate('/workflows')}>
-            5. Officer Workflow Task
-          </button>
-        </div>
-      </div>
-
       <div className="app-body">
-        {/* Navigation Sidebar */}
+        {/* Navigation Sidebar matching Mockup */}
         <aside className="sidebar">
           <nav className="sidebar-nav">
-            <div className="nav-section-title">Core Platform</div>
-            
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activeRoute === item.route || (item.id === 'digital-twin' && activeRoute.startsWith('/parcel/'));
-              
+              const isActive = activeRoute === item.route || 
+                (item.id === 'search' && activeRoute === '/explorer') ||
+                (item.id === 'consistency' && activeRoute === '/verification');
+
               return (
                 <a
                   key={item.id}
@@ -144,19 +140,12 @@ export default function Layout({
                   }}
                   href={item.route}
                 >
-                  <Icon size={17} />
+                  <Icon size={18} />
                   <span>{item.label}</span>
-                  {item.badge && <span className="nav-badge">{item.badge}</span>}
                 </a>
               );
             })}
           </nav>
-
-          <div style={{ padding: '1rem', borderTop: '1px solid #EAECF0', fontSize: '0.72rem', color: '#667085', backgroundColor: '#F8FAFC' }}>
-            <div style={{ fontWeight: 800, color: '#063B6D', marginBottom: '0.2rem' }}>MAHARASHTRA STATE PROTOTYPE</div>
-            <div>Mahabhulekh (7/12) & PMRDA GIS Layer</div>
-            <div style={{ marginTop: '0.4rem', color: '#16803C', fontWeight: 700 }}>✓ Demo Simulation Sandbox Online</div>
-          </div>
         </aside>
 
         {/* Main Content Workspace */}
