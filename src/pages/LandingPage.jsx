@@ -17,7 +17,10 @@ import {
   ShieldCheck,
   Building,
   Database,
-  GitPullRequest
+  GitPullRequest,
+  Check,
+  Zap,
+  ShieldAlert
 } from 'lucide-react';
 
 export default function LandingPage({ navigate, isAuthenticated }) {
@@ -59,9 +62,48 @@ export default function LandingPage({ navigate, isAuthenticated }) {
     }
   ];
 
+  const howSteps = [
+    {
+      step: '01',
+      title: 'ULPIN Parcel Identification',
+      desc: 'Enter 14-digit geocoded ULPIN identifier or survey number to locate parcel geometry on the GIS map.',
+      icon: Search
+    },
+    {
+      step: '02',
+      title: 'Digital Twin Aggregation',
+      desc: 'Platform automatically compiles 7/12 RoR, Sub-Registrar deeds, tax records, and PMRDA zoning into one twin.',
+      icon: Layers
+    },
+    {
+      step: '03',
+      title: 'Automated Consistency Check',
+      desc: '10 deterministic verification rules reconcile cadastral area, mutated co-owners, and document references.',
+      icon: CheckCircle2
+    },
+    {
+      step: '04',
+      title: 'Geo-AI Satellite Scan',
+      desc: 'Temporal satellite analysis compares optical imagery over time to flag unpermitted structural expansions.',
+      icon: Radio
+    },
+    {
+      step: '05',
+      title: 'Event-Driven Officer Task',
+      desc: 'Discrepancies automatically create and assign field verification tasks to Circle Revenue Inspectors.',
+      icon: GitPullRequest
+    },
+    {
+      step: '06',
+      title: 'Certified Due-Diligence Output',
+      desc: 'Generates official printable parcel verification reports while recording immutable audit trail logs.',
+      icon: FileText
+    }
+  ];
+
   return (
     <div style={{ backgroundColor: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif" }}>
-      {/* Top Header Bar matching image */}
+      {/* Top Header Bar */}
       <header style={{
         height: '75px',
         backgroundColor: '#FFFFFF',
@@ -100,7 +142,7 @@ export default function LandingPage({ navigate, isAuthenticated }) {
           </div>
         </div>
 
-        {/* Header Nav Links matching image */}
+        {/* Header Nav Links */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           <a href="#home" style={{ color: '#1D4ED8', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', borderBottom: '2px solid #1D4ED8', paddingBottom: '0.2rem' }}>Home</a>
           <a href="#about" style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>About</a>
@@ -110,7 +152,7 @@ export default function LandingPage({ navigate, isAuthenticated }) {
           <button onClick={() => setShowSpecModal(true)} style={{ background: 'none', border: 'none', color: '#1D4ED8', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>Full Platform Specs</button>
         </nav>
 
-        {/* Buttons & SIH Badge matching image */}
+        {/* Action Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button 
             className="btn btn-secondary"
@@ -127,32 +169,6 @@ export default function LandingPage({ navigate, isAuthenticated }) {
           >
             Get Started
           </button>
-
-          {/* Smart India Hackathon Badge matching top right of image */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderLeft: '1px solid #E2E8F0', paddingLeft: '1rem', marginLeft: '0.5rem' }}>
-            <div style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #FF9933 50%, #138808 50%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: '0.75rem'
-            }}>
-              SIH
-            </div>
-            <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#0F172A', letterSpacing: '0.3px', lineHeight: 1.1 }}>
-                SMART INDIA
-              </div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#1D4ED8', lineHeight: 1.1 }}>
-                HACKATHON 2024
-              </div>
-            </div>
-          </div>
         </div>
       </header>
 
@@ -173,7 +189,7 @@ export default function LandingPage({ navigate, isAuthenticated }) {
         </div>
       )}
 
-      {/* Main Hero Section with Landscape Background and Laptop Mockup */}
+      {/* Main Hero Section */}
       <div id="home" style={{
         position: 'relative',
         minHeight: '620px',
@@ -216,7 +232,7 @@ export default function LandingPage({ navigate, isAuthenticated }) {
             </div>
           </div>
 
-          {/* Right Laptop Frame Mockup Showcase */}
+          {/* Right Laptop Frame Showcase */}
           <div style={{ position: 'relative' }}>
             <div 
               onClick={() => handleProtectedAction('/explorer')}
@@ -231,7 +247,6 @@ export default function LandingPage({ navigate, isAuthenticated }) {
               onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.01)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
             >
-              {/* Laptop Screen Viewport */}
               <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', overflow: 'hidden', border: '1px solid #334155', height: '340px', position: 'relative' }}>
                 <div style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0F172A' }}>BhoomiDrishti</div>
@@ -339,8 +354,8 @@ export default function LandingPage({ navigate, isAuthenticated }) {
 
       <div style={{ height: '70px', backgroundColor: '#F8FAFC' }}></div>
 
-      {/* SECTION: DETAILED ABOUT BHOOMIDRISHTI */}
-      <section id="about" style={{ backgroundColor: '#FFFFFF', padding: '4rem 3rem', borderBottom: '1px solid #E2E8F0' }}>
+      {/* SECTION: DETAILED ABOUT */}
+      <section id="about" style={{ backgroundColor: '#FFFFFF', padding: '4.5rem 3rem', borderBottom: '1px solid #E2E8F0' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <span style={{ backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '0.35rem 0.85rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -385,11 +400,14 @@ export default function LandingPage({ navigate, isAuthenticated }) {
         </div>
       </section>
 
-      {/* SECTION: DETAILED FEATURES */}
-      <section id="features" style={{ backgroundColor: '#F8FAFC', padding: '4rem 3rem', borderBottom: '1px solid #E2E8F0' }}>
+      {/* SECTION: FEATURES */}
+      <section id="features" style={{ backgroundColor: '#F8FAFC', padding: '4.5rem 3rem', borderBottom: '1px solid #E2E8F0' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>
+            <span style={{ backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '0.35rem 0.85rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              CORE FEATURES
+            </span>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0F172A', marginTop: '0.75rem', marginBottom: '0.5rem' }}>
               Comprehensive Platform Capabilities
             </h2>
             <p style={{ fontSize: '1rem', color: '#64748B' }}>
@@ -398,7 +416,6 @@ export default function LandingPage({ navigate, isAuthenticated }) {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-            {/* Feature 1 */}
             <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.75rem' }}>
               <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
                 <Layers size={24} />
@@ -411,7 +428,6 @@ export default function LandingPage({ navigate, isAuthenticated }) {
               </p>
             </div>
 
-            {/* Feature 2 */}
             <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.75rem' }}>
               <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
                 <Radio size={24} />
@@ -424,7 +440,6 @@ export default function LandingPage({ navigate, isAuthenticated }) {
               </p>
             </div>
 
-            {/* Feature 3 */}
             <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.75rem' }}>
               <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
                 <FileCheck2 size={24} />
@@ -440,8 +455,49 @@ export default function LandingPage({ navigate, isAuthenticated }) {
         </div>
       </section>
 
-      {/* "Built for Smarter Land Governance" Section matching bottom of image */}
-      <div id="usecases" style={{ backgroundColor: '#FFFFFF', padding: '4rem 3rem 6rem 3rem', flex: 1 }}>
+      {/* SECTION: HOW IT WORKS PIPELINE */}
+      <section id="how" style={{ backgroundColor: '#FFFFFF', padding: '4.5rem 3rem', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <span style={{ backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '0.35rem 0.85rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              HOW IT WORKS
+            </span>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0F172A', marginTop: '0.75rem', marginBottom: '0.5rem' }}>
+              Step-by-Step Land Governance Pipeline
+            </h2>
+            <p style={{ fontSize: '1rem', color: '#64748B', maxWidth: '750px', margin: '0 auto' }}>
+              How BhoomiDrishti transforms raw parcel searches into verified, actionable governance workflows.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            {howSteps.map((step) => {
+              const StepIcon = step.icon;
+              return (
+                <div key={step.step} style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.5rem', position: 'relative' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#1D4ED8', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <StepIcon size={20} />
+                    </div>
+                    <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#CBD5E1' }}>
+                      {step.step}
+                    </span>
+                  </div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem' }}>
+                    {step.title}
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: '#64748B', lineHeight: 1.5 }}>
+                    {step.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: USE CASES */}
+      <div id="usecases" style={{ backgroundColor: '#F8FAFC', padding: '4.5rem 3rem 6rem 3rem', flex: 1 }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'grid', gridTemplateColumns: '380px 1fr', gap: '3rem', alignItems: 'center' }}>
           {/* Left Text Column */}
           <div>
@@ -454,9 +510,8 @@ export default function LandingPage({ navigate, isAuthenticated }) {
             <div style={{ height: '3px', width: '60px', backgroundColor: '#1D4ED8', borderRadius: '2px' }}></div>
           </div>
 
-          {/* Right 3 Persona Cards Column matching image */}
+          {/* Right 3 Persona Cards Column */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
-            {/* Card 1: For Citizens */}
             <div 
               onClick={() => handleProtectedAction('/citizen')}
               style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.5rem', cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s ease' }}
@@ -474,7 +529,6 @@ export default function LandingPage({ navigate, isAuthenticated }) {
               </p>
             </div>
 
-            {/* Card 2: For Departments */}
             <div 
               onClick={() => handleProtectedAction('/verification')}
               style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.5rem', cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s ease' }}
@@ -492,7 +546,6 @@ export default function LandingPage({ navigate, isAuthenticated }) {
               </p>
             </div>
 
-            {/* Card 3: For Planning Authorities */}
             <div 
               onClick={() => handleProtectedAction('/changes')}
               style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.5rem', cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s ease' }}
@@ -526,7 +579,7 @@ export default function LandingPage({ navigate, isAuthenticated }) {
                 Technical & Architectural Overview
               </h3>
               <p style={{ fontSize: '0.9rem', color: '#475467', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                BhoomiDrishti is designed under Smart India Hackathon 2024 guidelines as an interoperable, parcel-centric intelligence and verification platform.
+                BhoomiDrishti is designed as an interoperable, parcel-centric intelligence and verification platform.
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', fontSize: '0.85rem' }}>
