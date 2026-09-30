@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, LockKeyhole } from 'lucide-react';
 
-export default function LoginPage({ navigate, setUserRole }) {
+export default function LoginPage({ navigate, setUserRole, onLoginSuccess, authRequiredMessage }) {
   const [activeTab, setActiveTab] = useState('email');
   const [email, setEmail] = useState('demo.officer@bhoomidrishti.gov.in');
   const [password, setPassword] = useState('••••••••••••');
@@ -9,6 +9,7 @@ export default function LoginPage({ navigate, setUserRole }) {
 
   const handleSignIn = (e) => {
     e.preventDefault();
+    if (onLoginSuccess) onLoginSuccess('Department Officer');
     navigate('/roles');
   };
 
@@ -30,6 +31,14 @@ export default function LoginPage({ navigate, setUserRole }) {
       {/* Main Centered Sign In Card */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
         <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '2.5rem', width: '100%', maxWidth: '440px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+          
+          {authRequiredMessage && (
+            <div style={{ backgroundColor: '#FEF3C7', border: '1px solid #FCD34D', borderRadius: '6px', padding: '0.75rem', fontSize: '0.85rem', color: '#92400E', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+              <LockKeyhole size={18} />
+              {authRequiredMessage}
+            </div>
+          )}
+
           <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
             <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.3rem' }}>
               Welcome Back
@@ -116,7 +125,7 @@ export default function LoginPage({ navigate, setUserRole }) {
 
             {/* Forgot password */}
             <div style={{ textAlign: 'right', marginBottom: '1.5rem' }}>
-              <a href="#forgot" onClick={(e) => { e.preventDefault(); navigate('/roles'); }} style={{ fontSize: '0.82rem', color: '#1D4ED8', fontWeight: 600, textDecoration: 'none' }}>
+              <a href="#forgot" onClick={(e) => { e.preventDefault(); handleSignIn(e); }} style={{ fontSize: '0.82rem', color: '#1D4ED8', fontWeight: 600, textDecoration: 'none' }}>
                 Forgot password?
               </a>
             </div>
@@ -134,7 +143,7 @@ export default function LoginPage({ navigate, setUserRole }) {
           {/* Sign Up Footer */}
           <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#64748B' }}>
             Don't have an account?{' '}
-            <a href="#signup" onClick={(e) => { e.preventDefault(); navigate('/roles'); }} style={{ color: '#1D4ED8', fontWeight: 700, textDecoration: 'none' }}>
+            <a href="#signup" onClick={(e) => { e.preventDefault(); handleSignIn(e); }} style={{ color: '#1D4ED8', fontWeight: 700, textDecoration: 'none' }}>
               Sign Up
             </a>
           </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { User, Landmark, Users, Settings, ArrowRight, ArrowLeft } from 'lucide-react';
 
-export default function RoleSelectionPage({ navigate, setUserRole }) {
+export default function RoleSelectionPage({ navigate, setUserRole, onLoginSuccess }) {
   const roles = [
     {
       title: 'Citizen',
@@ -34,6 +34,7 @@ export default function RoleSelectionPage({ navigate, setUserRole }) {
   ];
 
   const handleSelect = (item) => {
+    if (onLoginSuccess) onLoginSuccess(item.role);
     setUserRole(item.role);
     navigate(item.route);
   };

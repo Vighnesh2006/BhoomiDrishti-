@@ -18,6 +18,7 @@ export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
   const [selectedState, setSelectedState] = useState('MH');
   const [userRole, setUserRole] = useState('Department Officer');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -28,22 +29,47 @@ export default function App() {
   }, []);
 
   const navigate = (path) => {
+    // Authentication Access Guard Enforcement
+    const publicPaths = ['/', '', '/login', '/roles'];
+    if (!isAuthenticated && !publicPaths.includes(path)) {
+      window.history.pushState({}, '', '/login');
+      setCurrentPath('/login');
+      window.scrollTo(0, 0);
+      return;
+    }
+
     window.history.pushState({}, '', path);
     setCurrentPath(path);
     window.scrollTo(0, 0);
   };
 
+  const handleLoginSuccess = (roleName) => {
+    setIsAuthenticated(true);
+    if (roleName) setUserRole(roleName);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    navigate('/login');
+  };
+
   // Route renderer logic
   const renderRoute = () => {
     if (currentPath === '/' || currentPath === '') {
-      return <LandingPage navigate={navigate} />;
+      return <LandingPage navigate={navigate} isAuthenticated={isAuthenticated} />;
     }
     if (currentPath === '/login') {
-      return <LoginPage setUserRole={setUserRole} navigate={navigate} />;
+      return <LoginPage setUserRole={setUserRole} navigate={navigate} onLoginSuccess={handleLoginSuccess} />;
     }
     if (currentPath === '/roles') {
-      return <RoleSelectionPage setUserRole={setUserRole} navigate={navigate} />;
+      return <RoleSelectionPage setUserRole={setUserRole} navigate={navigate} onLoginSuccess={handleLoginSuccess} />;
     }
+
+    // Protected Routes (Requires Login)
+    if (!isAuthenticated) {
+      return <LoginPage setUserRole={setUserRole} navigate={navigate} onLoginSuccess={handleLoginSuccess} authRequiredMessage="Please sign in to access BhoomiDrishti governance modules." />;
+    }
+
     if (currentPath === '/explorer' || currentPath.startsWith('/explorer')) {
       const urlParams = new URLSearchParams(window.location.search);
       const ulpin = urlParams.get('ulpin');
@@ -78,8 +104,8 @@ export default function App() {
       return <AdminPage navigate={navigate} />;
     }
 
-    // Default fallback
-    return <LandingPage navigate={navigate} />;
+    // Fallback
+    return <LandingPage navigate={navigate} isAuthenticated={isAuthenticated} />;
   };
 
   return (
@@ -90,6 +116,8 @@ export default function App() {
       setSelectedState={setSelectedState}
       userRole={userRole}
       setUserRole={setUserRole}
+      isAuthenticated={isAuthenticated}
+      onLogout={handleLogout}
     >
       {renderRoute()}
     </Layout>

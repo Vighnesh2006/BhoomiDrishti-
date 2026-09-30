@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Layers, 
   FileCheck2, 
@@ -10,32 +10,50 @@ import {
   MapPin,
   CheckCircle2,
   Search,
-  Sparkles
+  Sparkles,
+  Lock,
+  X,
+  FileText,
+  ShieldCheck,
+  Building,
+  Database,
+  GitPullRequest
 } from 'lucide-react';
 
-export default function LandingPage({ navigate }) {
+export default function LandingPage({ navigate, isAuthenticated }) {
+  const [showSpecModal, setShowSpecModal] = useState(false);
+  const [authNotice, setAuthNotice] = useState(false);
+
+  const handleProtectedAction = (targetRoute) => {
+    if (!isAuthenticated) {
+      setAuthNotice(true);
+      return;
+    }
+    navigate(targetRoute);
+  };
+
   const cards = [
     {
       title: 'Unified Parcel View',
-      desc: 'Connects data across departments',
+      desc: 'Connects data across 9 departmental layers around ULPIN',
       icon: Layers,
       route: '/explorer'
     },
     {
       title: 'Data Verification',
-      desc: 'Detects inconsistencies across records',
+      desc: 'Detects area & ownership inconsistencies across records',
       icon: FileCheck2,
       route: '/verification'
     },
     {
       title: 'Geospatial Intelligence',
-      desc: 'Monitors changes using satellite data',
+      desc: 'Monitors unpermitted structural changes using satellite AI',
       icon: Radio,
       route: '/changes'
     },
     {
       title: 'Faster Governance',
-      desc: 'Enables informed and transparent decisions',
+      desc: 'Enables informed, transparent, and event-driven decisions',
       icon: TrendingUp,
       route: '/officer'
     }
@@ -43,7 +61,7 @@ export default function LandingPage({ navigate }) {
 
   return (
     <div style={{ backgroundColor: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif" }}>
-      {/* Top Header Bar matching attached image */}
+      {/* Top Header Bar matching image */}
       <header style={{
         height: '75px',
         backgroundColor: '#FFFFFF',
@@ -52,6 +70,8 @@ export default function LandingPage({ navigate }) {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 3rem',
+        position: 'sticky',
+        top: 0,
         zIndex: 100
       }}>
         {/* Logo & Subtitle */}
@@ -82,12 +102,12 @@ export default function LandingPage({ navigate }) {
 
         {/* Header Nav Links matching image */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-          <a href="#home" onClick={(e) => { e.preventDefault(); navigate('/'); }} style={{ color: '#1D4ED8', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', borderBottom: '2px solid #1D4ED8', paddingBottom: '0.2rem' }}>Home</a>
-          <a href="#about" onClick={(e) => { e.preventDefault(); navigate('/explorer'); }} style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>About</a>
-          <a href="#features" onClick={(e) => { e.preventDefault(); navigate('/verification'); }} style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>Features</a>
-          <a href="#how" onClick={(e) => { e.preventDefault(); navigate('/changes'); }} style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>How it Works</a>
-          <a href="#usecases" onClick={(e) => { e.preventDefault(); navigate('/workflows'); }} style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>Use Cases</a>
-          <a href="#contact" onClick={(e) => { e.preventDefault(); navigate('/citizen'); }} style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>Contact</a>
+          <a href="#home" style={{ color: '#1D4ED8', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', borderBottom: '2px solid #1D4ED8', paddingBottom: '0.2rem' }}>Home</a>
+          <a href="#about" style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>About</a>
+          <a href="#features" style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>Features</a>
+          <a href="#how" style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>How it Works</a>
+          <a href="#usecases" style={{ color: '#475467', fontWeight: 500, fontSize: '0.9rem', textDecoration: 'none' }}>Use Cases</a>
+          <button onClick={() => setShowSpecModal(true)} style={{ background: 'none', border: 'none', color: '#1D4ED8', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>Full Platform Specs</button>
         </nav>
 
         {/* Buttons & SIH Badge matching image */}
@@ -97,7 +117,7 @@ export default function LandingPage({ navigate }) {
             onClick={() => navigate('/login')}
             style={{ padding: '0.5rem 1.2rem', borderColor: '#1D4ED8', color: '#1D4ED8', fontWeight: 600, fontSize: '0.9rem', borderRadius: '6px' }}
           >
-            Login
+            {isAuthenticated ? 'Portal Workspace' : 'Login'}
           </button>
 
           <button 
@@ -136,8 +156,25 @@ export default function LandingPage({ navigate }) {
         </div>
       </header>
 
+      {/* Auth Guard Alert Bar if unauthenticated user tries to click a protected module */}
+      {authNotice && (
+        <div style={{ backgroundColor: '#FEF3C7', borderBottom: '1px solid #FCD34D', padding: '0.75rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#92400E', fontSize: '0.88rem', fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Lock size={18} />
+            Authentication Required: Please sign in or select your role to access working governance modules.
+          </div>
+          <button 
+            className="btn btn-sm btn-primary" 
+            onClick={() => navigate('/login')}
+            style={{ backgroundColor: '#1D4ED8' }}
+          >
+            Sign In Now →
+          </button>
+        </div>
+      )}
+
       {/* Main Hero Section with Landscape Background and Laptop Mockup */}
-      <div style={{
+      <div id="home" style={{
         position: 'relative',
         minHeight: '620px',
         backgroundImage: 'linear-gradient(rgba(240, 246, 255, 0.85), rgba(224, 236, 255, 0.92)), url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600&auto=format&fit=crop")',
@@ -171,7 +208,7 @@ export default function LandingPage({ navigate }) {
               </button>
               <button 
                 className="btn btn-secondary"
-                onClick={() => navigate('/explorer')}
+                onClick={() => setShowSpecModal(true)}
                 style={{ padding: '0.75rem 1.75rem', fontSize: '1rem', borderRadius: '6px', fontWeight: 600, color: '#0F172A', backgroundColor: '#FFFFFF' }}
               >
                 Learn More
@@ -179,10 +216,10 @@ export default function LandingPage({ navigate }) {
             </div>
           </div>
 
-          {/* Right Laptop Frame Mockup Showcase matching image */}
+          {/* Right Laptop Frame Mockup Showcase */}
           <div style={{ position: 'relative' }}>
             <div 
-              onClick={() => navigate('/explorer')}
+              onClick={() => handleProtectedAction('/explorer')}
               style={{
                 backgroundColor: '#0F172A',
                 padding: '14px 14px 22px 14px',
@@ -196,7 +233,6 @@ export default function LandingPage({ navigate }) {
             >
               {/* Laptop Screen Viewport */}
               <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', overflow: 'hidden', border: '1px solid #334155', height: '340px', position: 'relative' }}>
-                {/* Simulated Header inside Laptop Screen */}
                 <div style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0F172A' }}>BhoomiDrishti</div>
                   <div style={{ fontSize: '0.75rem', backgroundColor: '#EFF6FF', padding: '0.2rem 0.6rem', borderRadius: '4px', color: '#1D4ED8', fontWeight: 600 }}>
@@ -204,7 +240,6 @@ export default function LandingPage({ navigate }) {
                   </div>
                 </div>
 
-                {/* Simulated GIS Map Inside Laptop Screen */}
                 <div style={{
                   height: 'calc(100% - 35px)',
                   backgroundImage: 'url("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/14/9512/5688")',
@@ -214,7 +249,6 @@ export default function LandingPage({ navigate }) {
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
-                  {/* Highlighted Blue Parcel Polygon */}
                   <div style={{
                     width: '160px',
                     height: '130px',
@@ -223,7 +257,6 @@ export default function LandingPage({ navigate }) {
                     borderRadius: '4px',
                     position: 'relative'
                   }}>
-                    {/* Floating Info Card Overlay matching mockup image */}
                     <div style={{
                       position: 'absolute',
                       right: '-110px',
@@ -249,12 +282,11 @@ export default function LandingPage({ navigate }) {
                 </div>
               </div>
             </div>
-            {/* Laptop Base Stand */}
             <div style={{ width: '110%', height: '10px', backgroundColor: '#334155', borderRadius: '0 0 10px 10px', margin: '0 auto', marginLeft: '-5%' }}></div>
           </div>
         </div>
 
-        {/* 4 Floating Feature Cards at the bottom of hero matching image */}
+        {/* 4 Floating Feature Cards */}
         <div style={{
           position: 'absolute',
           bottom: '-50px',
@@ -272,7 +304,7 @@ export default function LandingPage({ navigate }) {
             return (
               <div
                 key={i}
-                onClick={() => navigate(c.route)}
+                onClick={() => handleProtectedAction(c.route)}
                 style={{
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E2E8F0',
@@ -305,11 +337,111 @@ export default function LandingPage({ navigate }) {
         </div>
       </div>
 
-      {/* Spacer for floating cards */}
       <div style={{ height: '70px', backgroundColor: '#F8FAFC' }}></div>
 
+      {/* SECTION: DETAILED ABOUT BHOOMIDRISHTI */}
+      <section id="about" style={{ backgroundColor: '#FFFFFF', padding: '4rem 3rem', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <span style={{ backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '0.35rem 0.85rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              ABOUT BHOOMIDRISHTI
+            </span>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0F172A', marginTop: '0.75rem', marginBottom: '0.5rem' }}>
+              Solving Land Governance Fragmentation
+            </h2>
+            <p style={{ fontSize: '1rem', color: '#64748B', maxWidth: '750px', margin: '0 auto', lineHeight: 1.6 }}>
+              Existing platforms store land records across isolated departmental silos. BhoomiDrishti introduces an interoperable intelligence and verification layer built around a 14-digit ULPIN parcel identity.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.5rem' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                1. 14-Digit ULPIN Identity
+              </div>
+              <p style={{ fontSize: '0.88rem', color: '#475467', lineHeight: 1.5 }}>
+                Establishes a single, geocoded spatial identity for every parcel across India under DILRMP standards, eliminating duplicate or ghost land records.
+              </p>
+            </div>
+
+            <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.5rem' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                2. 9-Layer Digital Twin
+              </div>
+              <p style={{ fontSize: '0.88rem', color: '#475467', lineHeight: 1.5 }}>
+                Aggregates Cadastral Geometry, 7/12 RoR, Sub-Registrar Conveyance Deeds, Bank Mortgage Charges, Municipal Tax, PMRDA Master Plan Zoning, and Utilities.
+              </p>
+            </div>
+
+            <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.5rem' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                3. Deterministic Verification
+              </div>
+              <p style={{ fontSize: '0.88rem', color: '#475467', lineHeight: 1.5 }}>
+                Executes 10 automated cross-reconciliation rules to instantly catch area discrepancies, un-mutated co-owners, or missing document links.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION: DETAILED FEATURES */}
+      <section id="features" style={{ backgroundColor: '#F8FAFC', padding: '4rem 3rem', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0F172A', marginBottom: '0.5rem' }}>
+              Comprehensive Platform Capabilities
+            </h2>
+            <p style={{ fontSize: '1rem', color: '#64748B' }}>
+              Empowering Revenue Officers, Planning Authorities, Sub-Registrars, and Citizens.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            {/* Feature 1 */}
+            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.75rem' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <Layers size={24} />
+              </div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                Parcel Digital Twin Engine
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5 }}>
+                Provides 360-degree visibility over all connected records. Inspect 7/12 mutation histories, Sub-Registrar stamp duty payments, and PMRDA zoning rules on a single screen.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.75rem' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <Radio size={24} />
+              </div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                Temporal Geo-AI Satellite Scan
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5 }}>
+                Compares high-resolution satellite imagery snapshots over time periods (2023 vs 2026) to detect unpermitted construction, encroached boundaries, and NA land-use violations.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.75rem' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <FileCheck2 size={24} />
+              </div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                Event-Driven Officer Tasks
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5 }}>
+                Automates inter-departmental task routing. Sale deed registrations or satellite anomaly alerts automatically dispatch physical survey tasks to responsible Circle Officers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* "Built for Smarter Land Governance" Section matching bottom of image */}
-      <div style={{ backgroundColor: '#F8FAFC', padding: '4rem 3rem 6rem 3rem', borderTop: '1px solid #E2E8F0', flex: 1 }}>
+      <div id="usecases" style={{ backgroundColor: '#FFFFFF', padding: '4rem 3rem 6rem 3rem', flex: 1 }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'grid', gridTemplateColumns: '380px 1fr', gap: '3rem', alignItems: 'center' }}>
           {/* Left Text Column */}
           <div>
@@ -326,7 +458,7 @@ export default function LandingPage({ navigate }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
             {/* Card 1: For Citizens */}
             <div 
-              onClick={() => navigate('/citizen')}
+              onClick={() => handleProtectedAction('/citizen')}
               style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.5rem', cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s ease' }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#1D4ED8'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
@@ -344,7 +476,7 @@ export default function LandingPage({ navigate }) {
 
             {/* Card 2: For Departments */}
             <div 
-              onClick={() => navigate('/verification')}
+              onClick={() => handleProtectedAction('/verification')}
               style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.5rem', cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s ease' }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#1D4ED8'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
@@ -362,7 +494,7 @@ export default function LandingPage({ navigate }) {
 
             {/* Card 3: For Planning Authorities */}
             <div 
-              onClick={() => navigate('/changes')}
+              onClick={() => handleProtectedAction('/changes')}
               style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1.5rem', cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s ease' }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#1D4ED8'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
@@ -380,6 +512,61 @@ export default function LandingPage({ navigate }) {
           </div>
         </div>
       </div>
+
+      {/* FULL PLATFORM SPECIFICATION MODAL */}
+      {showSpecModal && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '850px' }}>
+            <div className="modal-header">
+              <span className="modal-title">BhoomiDrishti Full Platform Specifications</span>
+              <button className="modal-close" onClick={() => setShowSpecModal(false)}><X size={20} /></button>
+            </div>
+            <div className="modal-body" style={{ padding: '2rem', backgroundColor: '#FFFFFF' }}>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                Technical & Architectural Overview
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: '#475467', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                BhoomiDrishti is designed under Smart India Hackathon 2024 guidelines as an interoperable, parcel-centric intelligence and verification platform.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', fontSize: '0.85rem' }}>
+                <div style={{ border: '1px solid #E2E8F0', padding: '1rem', borderRadius: '8px', background: '#F8FAFC' }}>
+                  <strong style={{ color: '#1D4ED8' }}>1. Common Parcel Identity (ULPIN)</strong>
+                  <p style={{ color: '#64748B', marginTop: '0.3rem' }}>
+                    Utilizes 14-digit geocoded ULPIN standard to uniquely bind spatial polygon boundaries with 7/12 RoR excerpts and deed conveyance files.
+                  </p>
+                </div>
+
+                <div style={{ border: '1px solid #E2E8F0', padding: '1rem', borderRadius: '8px', background: '#F8FAFC' }}>
+                  <strong style={{ color: '#1D4ED8' }}>2. Data Consistency Engine</strong>
+                  <p style={{ color: '#64748B', marginTop: '0.3rem' }}>
+                    10 deterministic verification rules compare Cadastral GIS, 7/12 RoR, Sub-Registrar Conveyance Deeds, and Property Tax records.
+                  </p>
+                </div>
+
+                <div style={{ border: '1px solid #E2E8F0', padding: '1rem', borderRadius: '8px', background: '#F8FAFC' }}>
+                  <strong style={{ color: '#1D4ED8' }}>3. Satellite Geo-AI Change Alert</strong>
+                  <p style={{ color: '#64748B', marginTop: '0.3rem' }}>
+                    Temporal optical satellite scans detect unapproved structural expansions and un-converted agricultural land-use violations.
+                  </p>
+                </div>
+
+                <div style={{ border: '1px solid #E2E8F0', padding: '1rem', borderRadius: '8px', background: '#F8FAFC' }}>
+                  <strong style={{ color: '#1D4ED8' }}>4. State Adapter Architecture</strong>
+                  <p style={{ color: '#64748B', marginTop: '0.3rem' }}>
+                    Federated schema normalizer supporting Maharashtra Mahabhulekh (7/12 & Ferfar), Tamil Nadu Patta, and Karnataka Bhoomi data formats.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowSpecModal(false)}>Close Specifications</button>
+              <button className="btn btn-primary" onClick={() => { setShowSpecModal(false); navigate('/roles'); }}>Get Started Now →</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
