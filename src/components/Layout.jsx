@@ -63,18 +63,12 @@ export default function Layout({
         </div>
 
         <div className="topbar-actions">
-          {/* State Configuration Dropdown */}
+          {/* State Badge: Exclusive Maharashtra Prototype Focus */}
           <div className="state-badge">
             <Building2 size={14} color="#93C5FD" />
-            <select 
-              value={selectedState} 
-              onChange={(e) => setSelectedState(e.target.value)}
-              style={{ background: 'transparent', color: '#FFFFFF', border: 'none', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
-            >
-              <option value="MH" style={{ color: '#172B4D' }}>State: Maharashtra (Pune Demo)</option>
-              <option value="TN" style={{ color: '#172B4D' }}>State: Tamil Nadu (Chennai Demo)</option>
-              <option value="KA" style={{ color: '#172B4D' }}>State: Karnataka (Bengaluru Demo)</option>
-            </select>
+            <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '0.8rem' }}>
+              State: Maharashtra (Pune District Prototype)
+            </span>
           </div>
 
           {/* Role Switcher */}
@@ -159,9 +153,9 @@ export default function Layout({
           </nav>
 
           <div style={{ padding: '1rem', borderTop: '1px solid #EAECF0', fontSize: '0.72rem', color: '#667085', backgroundColor: '#F8FAFC' }}>
-            <div style={{ fontWeight: 700, color: '#063B6D', marginBottom: '0.2rem' }}>LAND STACK v2.4</div>
-            <div>Interoperable Governance Layer</div>
-            <div style={{ marginTop: '0.4rem', color: '#16803C', fontWeight: 600 }}>✓ Prototype Engine Online</div>
+            <div style={{ fontWeight: 800, color: '#063B6D', marginBottom: '0.2rem' }}>MAHARASHTRA STATE PROTOTYPE</div>
+            <div>Mahabhulekh (7/12) & PMRDA GIS Layer</div>
+            <div style={{ marginTop: '0.4rem', color: '#16803C', fontWeight: 700 }}>✓ Demo Simulation Sandbox Online</div>
           </div>
         </aside>
 
